@@ -23,15 +23,16 @@ public class ConsumidorEntregasService {
 	@Autowired
 	ConsumidorEntregasRepository consumidorEntregasRepo;
 	
-	public List<ConsumidorEntregas> montarListaEntregas(@RequestBody Date dataEntrega) {
+	public String montarListaEntregas(@RequestBody Date dataEntrega) {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");  
         String strDate = dateFormat.format(dataEntrega);
 		List<ConsumidorEntregas> lConsumidorEntregas = postEntregasLivresAPI(strDate);
 		//lConsumidorEntregas = montaListaConsumidorEntregas(lConsumidorEntregas);  
+		String a = "aaaaaaaaaa";
 		
 		//Verificar no bd se há algum registro com a data passada, caso haja, atualiza no bd
 		//senão, vamos CRIAR os registros no bd
-		return lConsumidorEntregas;
+		return a;
 	}
 	
 	/*public montaListaConsumidorEntregas(List<ConsumidorEntregas> lConsumidorEntregas) {

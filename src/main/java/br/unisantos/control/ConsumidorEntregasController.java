@@ -22,7 +22,7 @@ public class ConsumidorEntregasController {
 	private ConsumidorEntregasService consumidorEntregasService;
 	
 	@PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-	public List<ConsumidorEntregas> montarListaEntregas(@RequestBody Date dataEntrega){
+	public String montarListaEntregas(@RequestBody Date dataEntrega){
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
 	}
 	 
