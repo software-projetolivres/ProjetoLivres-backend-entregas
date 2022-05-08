@@ -13,7 +13,7 @@
 		<version>2.3.0.RELEASE</version>
 		<relativePath />
 	</parent>
-	<name>livres-entregas</name>
+	<name>java-getting-started</name>
 
 	<properties>
 		<java.version>1.8</java.version>
