@@ -5,11 +5,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tbConsumidorEntregas")
+@Table(name = "tb_consumidor_entregas")
 public class ConsumidorEntregas {
 	
 	@Id
-	private String idEntrega;
+	private String id_entrega;
 	private Long id_consumidor;
 	private String nome_consumidor;
 	private Integer comunidade_consumidor;
@@ -18,9 +18,9 @@ public class ConsumidorEntregas {
 	private String opcao_entrega;
 	private Double valor_entrega;
 	private Boolean selecionado;
-	private String entregadorResponsavel;
+	private String entregador_responsavel;
 	private Boolean entregue;
-	private String dataEntrega;
+	private String data_entrega;
 	
 	public Long getId_consumidor() {
 		return id_consumidor;
@@ -70,11 +70,11 @@ public class ConsumidorEntregas {
 	public void setSelecionado(Boolean selecionado) {
 		this.selecionado = selecionado;
 	}
-	public String getEntregadorResponsavel() {
-		return entregadorResponsavel;
+	public String getEntregador_responsavel() {
+		return entregador_responsavel;
 	}
-	public void setEntregadorResponsavel(String entregadorResponsavel) {
-		this.entregadorResponsavel = entregadorResponsavel;
+	public void setEntregador_responsavel(String entregadorResponsavel) {
+		this.entregador_responsavel = entregadorResponsavel;
 	}
 	public Boolean getEntregue() {
 		return entregue;
@@ -82,16 +82,16 @@ public class ConsumidorEntregas {
 	public void setEntregue(Boolean entregue) {
 		this.entregue = entregue;
 	}
-	public String getIdEntrega() {
-		return idEntrega;
+	public String getId_entrega() {
+		return id_entrega;
 	}
-	public void setIdEntrega(String idEntrega) {
-		this.idEntrega = idEntrega;
+	public void setId_entrega(String id_entrega) {
+		this.id_entrega = id_entrega;
 	}
-	public String getDataEntrega() {
-		return dataEntrega;
+	public String getData_entrega() {
+		return data_entrega;
 	}
-	public void setDataEntrega(String dataEntrega) {
-		this.dataEntrega = dataEntrega;
+	public void setData_entrega(String data_entrega) {
+		this.data_entrega = data_entrega;
 	}
 }

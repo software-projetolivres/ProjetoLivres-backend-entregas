@@ -3,8 +3,8 @@ package br.unisantos.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-/*import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;*/
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.unisantos.model.ConsumidorEntregas;
@@ -12,19 +12,22 @@ import br.unisantos.model.ConsumidorEntregas;
 @Repository
 public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEntregas, Long> {
 	
-	List<ConsumidorEntregas> findBySelecionadoFalse();
+	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = false AND c.data_entrega = :data_entrega"
+			+ " AND c.endereco_entrega != '' AND c.opcao_entrega = 'Sim'")
+	List<ConsumidorEntregas> findByEntregaValidaNaoSelec(@Param("data_entrega") String data_entrega);
 	
-	/*@Query("SELECT * FROM tbConsumidorEntregas WHERE selecionado = true AND"
-			+ "entregadorResponsavel = :resp AND dataEntrega = :dataEntrega")
-    public List<ConsumidorEntregas> findBySelecionadoAndEntregadorResponsavel(@Param("resp") String resp,
-    	@Param("dataEntrega") String dataEntrega);
+	/*@Query("SELECT * FROM tb_consumidor_entregas WHERE selecionado = true AND"
+			+ "entregador_responsavel = :resp AND data_entrega = :data_entrega")
+    List<ConsumidorEntregas> findBySelecionadoAndEntregadorResponsavel(@Param("resp") String resp,
+    	@Param("data_entrega") String data_entrega);*/
 	
-	@Query("SELECT * FROM tbConsumidorEntregas WHERE opcao_entrega = 'Sim' AND"
-			+ "(endereco_entrega = '' OR endereco_entrega = null) AND dataEntrega = :dataEntrega")
-    public List<ConsumidorEntregas> findByEntregaAndEnderecoEmpty(@Param("dataEntrega") String dataEntrega);*/
+	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.opcao_entrega = 'Sim' AND"
+			+ " (c.endereco_entrega = '' OR c.endereco_entrega = null) AND c.data_entrega = :data_entrega")
+    List<ConsumidorEntregas> findByEntregaAndEnderecoEmpty(@Param("data_entrega") String data_entrega);
 	
-    public List<ConsumidorEntregas> findByIdEntregaLike(String idEntrega);
+	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.id_entrega = :id_entrega")
+    List<ConsumidorEntregas> findByIdEntrega(@Param("id_entrega") String id_entrega);
     
-    /*@Query("SELECT * FROM tbConsumidorEntregas WHERE dataEntrega = :dataEntrega LIMIT 1")
-    public List<ConsumidorEntregas> findByDataEntregaLimit(@Param("dataEntrega") String dataEntrega);*/
+    /*@Query("SELECT * FROM tb_consumidor_entregas WHERE data_entrega = :dataEntrega LIMIT 1")
+    List<ConsumidorEntregas> findByDataEntregaLimit(@Param("dataEntrega") String data_entrega);*/
 }

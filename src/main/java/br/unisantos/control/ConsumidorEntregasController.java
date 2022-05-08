@@ -37,9 +37,9 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.roteirizarEntregas(lConsumidor);
 	}
 	
-	/*@PostMapping(value="/entregasInvalidas")
+	@PostMapping(value="/entregasInvalidas")
 	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException{
 		return consumidorEntregasService.listarEntregasInvalidas(consumidorEntregasService.getDataEntrega(dataEntrega));
-	}*/
+	}
 	
 }

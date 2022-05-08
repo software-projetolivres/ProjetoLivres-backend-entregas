@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.repository.ConsumidorEntregasRepository;
@@ -48,13 +47,8 @@ public class ConsumidorEntregasService {
 
 	public String montaListaConsumidorEntregas(String consumidorEntregasResponse, String dataEntrega)
 			throws JsonMappingException, JsonProcessingException {
-		// TO DO: implementar o método que verifica se a pessoa optou por entrega e se o
-		// end está null
-		// se estiver null, devemos atribuir a uma lista de endereços nulos para
-		// informar, senão
-		// apenas adicionamos para o retorno do método
 
-		List<ConsumidorEntregas> lConsumidorEntregas = new ArrayList<ConsumidorEntregas>();
+		//List<ConsumidorEntregas> lConsumidorEntregas = new ArrayList<>();
 		JSONObject root = new JSONObject(consumidorEntregasResponse);
 		JSONArray consumidores = root.getJSONArray("data");
 		// System.out.println("Gaaaaab = > " + consumidores);
@@ -62,34 +56,33 @@ public class ConsumidorEntregasService {
 		for (int i = 0; i < consumidores.length(); i++) {
 			JSONObject jsonConsumidor = consumidores.getJSONObject(i);
 
-			ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
 			Long id_consumidor = jsonConsumidor.getLong("id_consumidor");
 			String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
 			Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
-			Integer telefone_consumidor = jsonConsumidor.getInt("telefone_consumidor");
+			//Integer telefone_consumidor = jsonConsumidor.getInt("telefone_consumidor");
 			String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
 			String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
 			Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
 
 			if (opcao_entrega != "Não" && opcao_entrega != null && opcao_entrega != "") {
-				consumidorEntregas.setIdEntrega(dataEntrega + "c" + id_consumidor);
+				ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
+				
+				consumidorEntregas.setId_entrega(dataEntrega + "c" + id_consumidor);
 				consumidorEntregas.setId_consumidor(id_consumidor);
 				consumidorEntregas.setNome_consumidor(nome_consumidor);
 				consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
-				consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
+				//consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
 				consumidorEntregas.setEndereco_entrega(endereco_entrega);
 				consumidorEntregas.setOpcao_entrega(opcao_entrega);
 				consumidorEntregas.setValor_entrega(valor_entrega);
-				consumidorEntregas.setDataEntrega(dataEntrega);
-				lConsumidorEntregas.add(consumidorEntregas);
+				consumidorEntregas.setData_entrega(dataEntrega);
+				//lConsumidorEntregas.add(consumidorEntregas);
 				salvar(consumidorEntregas);
 			}
 		}
-
-		//String result = new Gson().toJson(lConsumidorEntregas);
-		// String result = new Gson().toJson(listarNaoSelecionados());
-
-		return "yey";
+		
+		//return new ObjectMapper().writeValueAsString(lConsumidorEntregas);//listarNaoSelecionados().toString();
+		return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 	}
 
 	public String roteirizarEntregas(@RequestBody List<ConsumidorEntregas> lConsumidor) {
@@ -111,15 +104,11 @@ public class ConsumidorEntregasService {
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 		String response = restTemplate.postForObject(url, request, String.class);
-		// String result = new Gson().toJson(response);
-
-		// JSONObject result = new JSONObject(response);
-		// return result;
 		return response.toString();
 	}
 
-	public List<ConsumidorEntregas> listarNaoSelecionados() {
-		List<ConsumidorEntregas> lista = repo.findBySelecionadoFalse();
+	public List<ConsumidorEntregas> listarNaoSelecionados(String dataEntrega) {
+		List<ConsumidorEntregas> lista = repo.findByEntregaValidaNaoSelec(dataEntrega);
 		return lista;
 	}
 
@@ -127,20 +116,23 @@ public class ConsumidorEntregasService {
 		List<ConsumidorEntregas> lista = repo.findBySelecionadoAndEntregadorResponsavel(resp,
 				dataEntrega);
 		return lista;
-	}
+	}*/
 
 	public List<ConsumidorEntregas> listarEntregasInvalidas(String dataEntrega) {
 		List<ConsumidorEntregas> lista = repo.findByEntregaAndEnderecoEmpty(dataEntrega);
 		return lista;
-	}*/
+	}
 
 	public String salvar(ConsumidorEntregas consumidorEntregas) {
-		/*List<ConsumidorEntregas> consumidorExistente = repo
-				.findByIdEntregaLike(consumidorEntregas.getIdEntrega());
+		List<ConsumidorEntregas> consumidorExistente = repo
+				.findByIdEntrega(consumidorEntregas.getId_entrega());
 
 		if (consumidorExistente.size() > 0) {
 			alterar(consumidorEntregas);
-		}*/
+		}
+		
+		consumidorEntregas.setEntregue(false);
+		consumidorEntregas.setSelecionado(false);
 
 		repo.save(consumidorEntregas);
 		return "Registro criado com sucesso!";
@@ -148,7 +140,7 @@ public class ConsumidorEntregasService {
 
 	public String alterar(ConsumidorEntregas consumidorEntregas) {
 		List<ConsumidorEntregas> consumidorExistente = repo
-				.findByIdEntregaLike(consumidorEntregas.getIdEntrega());
+				.findByIdEntrega(consumidorEntregas.getId_entrega());
 
 		if (consumidorExistente.size() == 0) {
 			return "Não existe nenhum registro com esse id!";
