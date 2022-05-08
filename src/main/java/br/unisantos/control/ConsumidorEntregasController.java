@@ -25,7 +25,7 @@ public class ConsumidorEntregasController {
 	public List<ConsumidorEntregas> montarListaEntregas(@RequestBody Date dataEntrega){
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
 	}
-	
+	 
 	@PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public String roteirizarEntregas(@RequestBody List<ConsumidorEntregas> lConsumidor){

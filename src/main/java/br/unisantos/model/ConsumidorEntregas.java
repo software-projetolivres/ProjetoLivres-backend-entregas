@@ -16,7 +16,7 @@ public class ConsumidorEntregas {
 	private String endereco_entrega;
 	private String opcao_entrega;
 	private Double valor_entrega;
-	//private Boolean foiRoteirizado;	//verificação se este registro já foi roteirizado evitando conflitos
+	//private Boolean foiRoteirizado;  //verificação se este registro já foi roteirizado evitando conflitos
 	
 	public Long getId_consumidor() {
 		return id_consumidor;

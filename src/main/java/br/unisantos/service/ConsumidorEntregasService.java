@@ -27,7 +27,7 @@ public class ConsumidorEntregasService {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");  
         String strDate = dateFormat.format(dataEntrega);
 		List<ConsumidorEntregas> lConsumidorEntregas = postEntregasLivresAPI(strDate);
-		//lConsumidorEntregas = montaListaConsumidorEntregas(lConsumidorEntregas);
+		//lConsumidorEntregas = montaListaConsumidorEntregas(lConsumidorEntregas);  
 		
 		//Verificar no bd se há algum registro com a data passada, caso haja, atualiza no bd
 		//senão, vamos CRIAR os registros no bd
@@ -38,7 +38,7 @@ public class ConsumidorEntregasService {
 	 	// TO DO: implementar o método que verifica se a pessoa optou por entrega e se o end está null
 	 	//se estiver null, devemos atribuir a uma lista de endereços nulos para informar, senão
 	 	//apenas adicionamos para o retorno do método
-	 }*/
+	 }*/ 
 	
 	public String roteirizarEntregas(@RequestBody List<ConsumidorEntregas> lConsumidor){
 		//TO DO: persistir no banco as entregas que foram selecionadas e chamar a api do google

@@ -19,5 +19,4 @@ public class DirectionsGoogleApiBean {
 	public void setDirectionsGoogleApi(DirectionsGoogleApi directionsGoogleApi) {
 		this.directionsGoogleApi = directionsGoogleApi;
 	}
-	
 }

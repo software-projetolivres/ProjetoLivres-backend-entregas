@@ -11,7 +11,7 @@ public class DirectionsGoogleApi {
 	private TravelMode mode;
 	private Unit unit; //METRIC
 	private String waypoints;
-	private Boolean optimizeWaypoints; //TRUE
+	private Boolean optimizeWaypoints; //TRUE 
 
 	GeoApiContext context = new GeoApiContext.Builder()
 			.apiKey("AIzaSyCS0H1p4PbnrfIt6KlT9y9EqQmEZKdce_8")

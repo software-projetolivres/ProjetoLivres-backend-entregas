@@ -7,5 +7,5 @@ import br.unisantos.model.ConsumidorEntregas;
 
 @Repository
 public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEntregas, Long> {
-
+ 
 }
