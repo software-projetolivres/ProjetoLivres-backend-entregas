@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class ConsumidorEntregasController {
 	private ConsumidorEntregasService consumidorEntregasService;
 	
 	@PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-	public String montarListaEntregas(@RequestBody Date dataEntrega){
+	public List<ConsumidorEntregas> montarListaEntregas(@RequestBody Date dataEntrega){
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
 	}
 	 
@@ -32,4 +33,8 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.roteirizarEntregas(lConsumidor);
 	}
 	
+	@GetMapping
+	public String getConsumidorEntregas() {
+		return "meu deus!";
+	}
 }
