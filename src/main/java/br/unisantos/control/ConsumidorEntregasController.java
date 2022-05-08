@@ -28,6 +28,7 @@ public class ConsumidorEntregasController {
 	@ResponseBody
 	public String montarListaEntregas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
+		//return consumidorEntregasService.postEntregasLivresAPI(consumidorEntregasService.getDataEntrega(dataEntrega));
 	}
 	 
 	@PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -36,9 +37,9 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.roteirizarEntregas(lConsumidor);
 	}
 	
-	@PostMapping(value="/entregasInvalidas")
+	/*@PostMapping(value="/entregasInvalidas")
 	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException{
 		return consumidorEntregasService.listarEntregasInvalidas(consumidorEntregasService.getDataEntrega(dataEntrega));
-	}
+	}*/
 	
 }
