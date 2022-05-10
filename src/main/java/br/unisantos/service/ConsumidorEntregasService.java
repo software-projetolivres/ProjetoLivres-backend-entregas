@@ -1,6 +1,5 @@
 package br.unisantos.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -48,10 +47,8 @@ public class ConsumidorEntregasService {
 	public String montaListaConsumidorEntregas(String consumidorEntregasResponse, String dataEntrega)
 			throws JsonMappingException, JsonProcessingException {
 
-		//List<ConsumidorEntregas> lConsumidorEntregas = new ArrayList<>();
 		JSONObject root = new JSONObject(consumidorEntregasResponse);
 		JSONArray consumidores = root.getJSONArray("data");
-		// System.out.println("Gaaaaab = > " + consumidores);
 
 		for (int i = 0; i < consumidores.length(); i++) {
 			JSONObject jsonConsumidor = consumidores.getJSONObject(i);
@@ -60,6 +57,7 @@ public class ConsumidorEntregasService {
 			String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
 			Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
 			//Integer telefone_consumidor = jsonConsumidor.getInt("telefone_consumidor");
+			//Object telefone_consumidor = jsonConsumidor.opt("telefone_consumidor"); //Devolve um Long
 			String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
 			String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
 			Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
@@ -76,12 +74,10 @@ public class ConsumidorEntregasService {
 				consumidorEntregas.setOpcao_entrega(opcao_entrega);
 				consumidorEntregas.setValor_entrega(valor_entrega);
 				consumidorEntregas.setData_entrega(dataEntrega);
-				//lConsumidorEntregas.add(consumidorEntregas);
 				salvar(consumidorEntregas);
 			}
 		}
 		
-		//return new ObjectMapper().writeValueAsString(lConsumidorEntregas);//listarNaoSelecionados().toString();
 		return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 	}
 

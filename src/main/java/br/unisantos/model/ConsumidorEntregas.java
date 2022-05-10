@@ -9,11 +9,11 @@ import javax.persistence.Table;
 public class ConsumidorEntregas {
 	
 	@Id
-	private String id_entrega;
+	private String id_entrega;	//(dataEntrega + "c" + id_consumidor);
 	private Long id_consumidor;
 	private String nome_consumidor;
 	private Integer comunidade_consumidor;
-	private Integer telefone_consumidor;
+	private Long telefone_consumidor;
 	private String endereco_entrega;
 	private String opcao_entrega;
 	private Double valor_entrega;
@@ -40,10 +40,10 @@ public class ConsumidorEntregas {
 	public void setComunidade_consumidor(Integer comunidade_consumidor) {
 		this.comunidade_consumidor = comunidade_consumidor;
 	}
-	public Integer getTelefone_consumidor() {
+	public Long getTelefone_consumidor() {
 		return telefone_consumidor;
 	}
-	public void setTelefone_consumidor(Integer telefone_consumidor) {
+	public void setTelefone_consumidor(Long telefone_consumidor) {
 		this.telefone_consumidor = telefone_consumidor;
 	}
 	public String getEndereco_entrega() {
