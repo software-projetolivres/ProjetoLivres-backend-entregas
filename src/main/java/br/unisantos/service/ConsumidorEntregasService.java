@@ -17,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.unisantos.functions.DataEntrega;
 import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.repository.ConsumidorEntregasRepository;
 
@@ -30,18 +30,11 @@ public class ConsumidorEntregasService {
 
 	public String montarListaEntregas(@RequestBody String responseBody)
 			throws JsonMappingException, JsonProcessingException {
-		String dataEntrega = getDataEntrega(responseBody);
+		String dataEntrega = DataEntrega.getDataEntrega(responseBody);
 		String consumidorEntregasResponse = postEntregasLivresAPI(dataEntrega);
 		String sConsumidorEntregas = montaListaConsumidorEntregas(consumidorEntregasResponse, dataEntrega);
 
 		return sConsumidorEntregas;
-	}
-
-	public String getDataEntrega(@RequestBody String responseBody)
-			throws JsonMappingException, JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(responseBody);
-		return jsonNode.get("dataEntrega").asText();
 	}
 
 	public String montaListaConsumidorEntregas(String consumidorEntregasResponse, String dataEntrega)

@@ -12,7 +12,7 @@ import br.unisantos.model.CadastroUsuario;
 import br.unisantos.service.CadastroUsuarioService;
 
 @RestController
-@RequestMapping("/cadastroUsuario")
+@RequestMapping("/api/cadastroUsuario")
 public class CadastroUsuarioController {
 	
 	@Autowired

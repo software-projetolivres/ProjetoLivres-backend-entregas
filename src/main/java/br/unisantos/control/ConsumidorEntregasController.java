@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import br.unisantos.functions.DataEntrega;
 import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.service.ConsumidorEntregasService;
 
 @RestController
-@RequestMapping("/consumidorEntregas")
+@RequestMapping("/api/consumidorEntregas")
 public class ConsumidorEntregasController {
 
 	@Autowired
@@ -38,7 +39,7 @@ public class ConsumidorEntregasController {
 	
 	@PostMapping(value="/entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException{
-		return consumidorEntregasService.listarEntregasInvalidas(consumidorEntregasService.getDataEntrega(dataEntrega));
+		return consumidorEntregasService.listarEntregasInvalidas(DataEntrega.getDataEntrega(dataEntrega));
 	}
 	
 }
