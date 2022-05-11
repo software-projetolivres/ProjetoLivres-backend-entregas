@@ -36,15 +36,20 @@ public class CadastroUsuarioService {
 	public String confirmarToken(String pToken) {
 		Token token = tokenService.encontrarToken(pToken)
 				.orElseThrow(() -> new IllegalStateException("Este token não foi encontrado"));
-		
-		if(token.getData_confirmacao() != null) {
-			return "Este endereço de e-mail já foi confirmado!";
+
+		if (token.getData_confirmacao() != null) {
+			return "Este endereço de e-mail já foi confirmado!!";
 		}
-		
-		if(token.getData_expiracao().isBefore(LocalDateTime.now())) {
-			return "O token expirou!";
+
+		if (token.getData_expiracao().isBefore(LocalDateTime.now())) {
+			if(tokenService.usuarioTemTokenValido(token.getUsuario())) {
+				return "Este usuário possui token válido!";
+			}
+			
+			usuarioService.gerarNovoToken(token);
+			return "Este token expirou! Um novo token foi enviado.";
 		}
-		
+
 		tokenService.atualizarConfirmacao(pToken);
 		usuarioService.ativarUsuario(token.getUsuario().getEmail());
 		return "O usuário foi confirmado com sucesso!";

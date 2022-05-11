@@ -143,7 +143,7 @@ public class ConsumidorEntregasService {
 		}
 
 		ConsumidorEntregas cons = consumidorExistente.get(0);
-		BeanUtils.copyProperties(consumidorEntregas, cons, "id");
+		BeanUtils.copyProperties(consumidorEntregas, cons, "id", "selecionado", "entregador_responsavel", "entregue");
 		cons = repo.save(cons);
 
 		return "Registro alterado com sucesso!";

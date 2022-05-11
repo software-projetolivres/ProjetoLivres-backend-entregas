@@ -1,21 +1,27 @@
 package br.unisantos.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
-public class Token {
+@Table(name = "tb_token")
+public class Token implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@SequenceGenerator(name = "sequencia_token", sequenceName = "sequencia_token", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequencia_token")
 	@Id
@@ -34,7 +40,7 @@ public class Token {
 	private LocalDateTime data_confirmacao;
 	
 	@Autowired
-	@ManyToOne	//um usuário pode ter solicitado vários tokens
+	@ManyToOne(fetch = FetchType.LAZY)	//um usuário pode ter solicitado vários tokens
 	@JoinColumn(nullable = false)
 	private Usuario usuario;
 	

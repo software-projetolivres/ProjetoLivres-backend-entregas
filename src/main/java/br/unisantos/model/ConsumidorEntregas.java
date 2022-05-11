@@ -1,12 +1,16 @@
 package br.unisantos.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "tb_consumidor_entregas")
-public class ConsumidorEntregas {
+public class ConsumidorEntregas implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	private String id_entrega;	//(dataEntrega + "c" + id_consumidor);
