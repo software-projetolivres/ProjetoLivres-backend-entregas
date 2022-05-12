@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +41,11 @@ public class ConsumidorEntregasController {
 	@PostMapping(value="/entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException{
 		return consumidorEntregasService.listarEntregasInvalidas(DataEntrega.getDataEntrega(dataEntrega));
+	}
+	
+	@GetMapping
+	public String teste() {
+		return "Teste! Ok!";
 	}
 	
 }
