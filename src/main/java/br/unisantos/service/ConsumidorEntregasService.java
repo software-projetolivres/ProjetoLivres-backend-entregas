@@ -1,6 +1,7 @@
 package br.unisantos.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,12 +22,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.unisantos.functions.DataEntrega;
 import br.unisantos.model.ConsumidorEntregas;
+import br.unisantos.model.Usuario;
 import br.unisantos.repository.ConsumidorEntregasRepository;
+import br.unisantos.repository.UsuarioRepository;
 
 @Service
 public class ConsumidorEntregasService {
+	
 	@Autowired
 	private ConsumidorEntregasRepository repo;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepo;
 
 	public String montarListaEntregas(@RequestBody String responseBody)
 			throws JsonMappingException, JsonProcessingException {
@@ -58,7 +65,7 @@ public class ConsumidorEntregasService {
 			if (opcao_entrega != "Não" && opcao_entrega != null && opcao_entrega != "") {
 				ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
 				
-				consumidorEntregas.setId_entrega(dataEntrega + "c" + id_consumidor);
+				consumidorEntregas.setId(dataEntrega + "c" + id_consumidor);
 				consumidorEntregas.setId_consumidor(id_consumidor);
 				consumidorEntregas.setNome_consumidor(nome_consumidor);
 				consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
@@ -111,32 +118,60 @@ public class ConsumidorEntregasService {
 		List<ConsumidorEntregas> lista = repo.findByEntregaAndEnderecoEmpty(dataEntrega);
 		return lista;
 	}
+	
+	public String atualizarSelecionarEntregas(String requestBody){
+		JSONObject root = new JSONObject(requestBody);
+		JSONArray idsEntregas = root.getJSONArray("data");
+		
+		String dataEntrega = root.getString("dataEntrega");
+		System.out.println("GAAAAAAB 1 => " + dataEntrega);
+		String emailEntregador = root.getString("emailEntregador");
+		System.out.println("GAAAAAAB 2 => " + emailEntregador);
+		
+		Optional<Usuario> entregador = usuarioRepo.findByEmail(emailEntregador);
+		if (!entregador.isPresent()) {
+			return "Este e-mail não pertence a nenhum entregador cadastrado no sistema.";
+		}
+
+		for (int i = 0; i < idsEntregas.length(); i++) {
+			JSONObject jsonIdsEntregas = idsEntregas.getJSONObject(i);
+
+			String id_entrega = jsonIdsEntregas.getString("id_entrega");
+			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
+			if(entrega.isPresent()) {
+				entrega.get().setSelecionado(true);
+				entrega.get().setEntregador_responsavel(entregador.get());
+			}
+			
+			alterar(entrega.get());
+		}
+		return "ta";
+	}
 
 	public String salvar(ConsumidorEntregas consumidorEntregas) {
-		List<ConsumidorEntregas> consumidorExistente = repo
-				.findByIdEntrega(consumidorEntregas.getId_entrega());
+		Optional<ConsumidorEntregas> consumidorExistente = repo
+				.findById(consumidorEntregas.getId());
+		
+		System.out.println("GAAAAAAAAAAAAAAB => " + consumidorExistente.get().getId());
 
-		if (consumidorExistente.size() > 0) {
-			alterar(consumidorEntregas);
+		if (consumidorExistente.isPresent()) {
+			System.out.println("EXISTE O CONSUMIDORRRR ");
+			return alterar(consumidorExistente.get());
 		}
 		
 		consumidorEntregas.setEntregue(false);
 		consumidorEntregas.setSelecionado(false);
+		System.out.println("NAO EH POSSIVEL");
 
 		repo.save(consumidorEntregas);
 		return "Registro criado com sucesso!";
 	}
 
 	public String alterar(ConsumidorEntregas consumidorEntregas) {
-		List<ConsumidorEntregas> consumidorExistente = repo
-				.findByIdEntrega(consumidorEntregas.getId_entrega());
+		System.out.println("ENTROU AQUI JESUSR ");
 
-		if (consumidorExistente.size() == 0) {
-			return "Não existe nenhum registro com esse id!";
-		}
-
-		ConsumidorEntregas cons = consumidorExistente.get(0);
-		BeanUtils.copyProperties(consumidorEntregas, cons, "id", "selecionado", "entregador_responsavel", "entregue");
+		ConsumidorEntregas cons = consumidorEntregas;
+		BeanUtils.copyProperties(consumidorEntregas, cons, "id");
 		cons = repo.save(cons);
 
 		return "Registro alterado com sucesso!";

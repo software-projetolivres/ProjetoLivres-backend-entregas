@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -13,7 +14,7 @@ public class ConsumidorEntregas implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	private String id_entrega;	//(dataEntrega + "c" + id_consumidor);
+	private String id;	//(dataEntrega + "c" + id_consumidor);
 	private Long id_consumidor;
 	private String nome_consumidor;
 	private Integer comunidade_consumidor;
@@ -22,9 +23,11 @@ public class ConsumidorEntregas implements Serializable {
 	private String opcao_entrega;
 	private Double valor_entrega;
 	private Boolean selecionado;
-	private String entregador_responsavel;
 	private Boolean entregue;
 	private String data_entrega;
+	
+	@ManyToOne
+	private Usuario entregador_responsavel;
 	
 	public Long getId_consumidor() {
 		return id_consumidor;
@@ -74,10 +77,10 @@ public class ConsumidorEntregas implements Serializable {
 	public void setSelecionado(Boolean selecionado) {
 		this.selecionado = selecionado;
 	}
-	public String getEntregador_responsavel() {
+	public Usuario getEntregador_responsavel() {
 		return entregador_responsavel;
 	}
-	public void setEntregador_responsavel(String entregadorResponsavel) {
+	public void setEntregador_responsavel(Usuario entregadorResponsavel) {
 		this.entregador_responsavel = entregadorResponsavel;
 	}
 	public Boolean getEntregue() {
@@ -86,11 +89,11 @@ public class ConsumidorEntregas implements Serializable {
 	public void setEntregue(Boolean entregue) {
 		this.entregue = entregue;
 	}
-	public String getId_entrega() {
-		return id_entrega;
+	public String getId() {
+		return id;
 	}
-	public void setId_entrega(String id_entrega) {
-		this.id_entrega = id_entrega;
+	public void setId(String id) {
+		this.id = id;
 	}
 	public String getData_entrega() {
 		return data_entrega;

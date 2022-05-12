@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.service.ConsumidorEntregasService;
 
 @RestController
-@RequestMapping("/api/consumidorEntregas")
+@RequestMapping("/api/entregas")
 public class ConsumidorEntregasController {
 
 	@Autowired
@@ -31,21 +33,30 @@ public class ConsumidorEntregasController {
 	public String montarListaEntregas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
 	}
+	
+	@GetMapping(path = "entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public List<ConsumidorEntregas> listarEntregasInvalidass(@RequestParam("dataEntrega") String dataEntrega) throws JsonMappingException, JsonProcessingException{
+		return consumidorEntregasService.listarEntregasInvalidas(dataEntrega);
+	}
 	 
-	@PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
+	/*@PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
 				produces = {MediaType.APPLICATION_JSON_VALUE})
 	public String roteirizarEntregas(@RequestBody List<ConsumidorEntregas> lConsumidor){
 		return consumidorEntregasService.roteirizarEntregas(lConsumidor);
-	}
-	
-	@PostMapping(value="/entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
-	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException{
-		return consumidorEntregasService.listarEntregasInvalidas(DataEntrega.getDataEntrega(dataEntrega));
-	}
+	}*/
 	
 	@GetMapping
 	public String teste() {
 		return "Teste! Ok!";
 	}
+	
+	@PutMapping(value="/selecionar")
+	public String atualizarSelecionarEntregas(@RequestBody String requestBody){
+		return consumidorEntregasService.atualizarSelecionarEntregas(requestBody);
+		//return ResponseEntity.ok().build();
+		
+		//return ResponseEntity.status()
+	}
+	
 	
 }
