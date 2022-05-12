@@ -47,7 +47,7 @@ public class CadastroUsuarioService {
 					ConstrucaoEmail.emailAguardeConfirmacao(usuario.getNome()), ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO);
 			return token;
 		} else {
-			throw new IllegalStateException("Este endereço de e-mail não é válido!");
+			return "Este endereço de e-mail não é válido!";
 		}
 	}
 
