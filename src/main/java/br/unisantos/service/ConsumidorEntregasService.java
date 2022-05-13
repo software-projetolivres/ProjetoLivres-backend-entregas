@@ -108,23 +108,27 @@ public class ConsumidorEntregasService {
 		return lista;
 	}
 
-	/*public List<ConsumidorEntregas> listarSelecionadosResponsavel(String resp, String dataEntrega) {
-		List<ConsumidorEntregas> lista = repo.findBySelecionadoAndEntregadorResponsavel(resp,
-				dataEntrega);
+	public List<ConsumidorEntregas> listarSelecionadosResponsavel(String dataEntrega, String email) {
+		Optional<Usuario> entregador = usuarioRepo.findByEmail(email);
+		if (!entregador.isPresent()) {
+			return null;
+		}
+		
+		List<ConsumidorEntregas> lista = repo.findSelecionadosEntregadorResp(dataEntrega, entregador.get());
 		return lista;
-	}*/
+	}
 
 	public List<ConsumidorEntregas> listarEntregasInvalidas(String dataEntrega) {
 		List<ConsumidorEntregas> lista = repo.findByEntregaAndEnderecoEmpty(dataEntrega);
 		return lista;
 	}
 	
-	public String atualizarSelecionarEntregas(String requestBody){
+	public String atualizarEntregas(String requestBody){
 		String result = "Entrega(s) atualizada(s) com sucesso!";
 		Boolean msgEntregaAtribuida = false, msgEntregaInexistente = false;
 		JSONObject root = new JSONObject(requestBody);
 		String emailEntregador = root.getString("emailEntregador");
-		JSONArray idsEntregas = root.getJSONArray("data");
+		JSONArray idsEntregas = root.getJSONArray("entregas");
 		
 		Optional<Usuario> entregador = usuarioRepo.findByEmail(emailEntregador);
 		if (!entregador.isPresent()) {
@@ -134,23 +138,35 @@ public class ConsumidorEntregasService {
 		for (int i = 0; i < idsEntregas.length(); i++) {
 			JSONObject jsonIdsEntregas = idsEntregas.getJSONObject(i);
 			String id_entrega = jsonIdsEntregas.getString("id_entrega");
+			Boolean selecionadoJson = jsonIdsEntregas.getBoolean("selecionado");
+			Boolean entregueJson = jsonIdsEntregas.getBoolean("entregue");
 			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
 			
 			if(entrega.isPresent()) {
-				if(entrega.get().getSelecionado() == false) {
-					entrega.get().setSelecionado(true);
-					entrega.get().setEntregador_responsavel(entregador.get());
-					alterar(entrega.get());
+				Boolean selecionado = entrega.get().getSelecionado();
+				Boolean entregue = entrega.get().getEntregue();
+				
+				if(selecionadoJson != selecionado) {	//caso o campo "selecionado" tenha sido alterado
+					entrega.get().setSelecionado(selecionadoJson);
+					entrega.get().setEntregador_responsavel(!selecionadoJson ? null : entregador.get());
 				} else {
-					msgEntregaAtribuida = true;
+					if(entrega.get().getSelecionado() == true && entrega.get().getEntregador_responsavel() != entregador.get()) {
+						msgEntregaAtribuida = true;
+					}
 				}
+				
+				if(entregueJson != entregue) {	//caso o campo "entregue" tenha sido alterado
+					entrega.get().setEntregue(entregueJson);
+				}
+				
+				alterar(entrega.get());
 			} else {
 				msgEntregaInexistente = true;
 			}		
 		}
 		
 		result = result + (msgEntregaAtribuida ? " Alguma(s) entrega(s) pode(m) não ter sido atribuída(s) a você "
-				+ "pois alguém já se apropriou" : "");
+				+ "pois alguém já se apropriou." : "");
 		result = result + (msgEntregaInexistente ? " Alguma(s) entrega(s) selecionada(s) não existe(m) no sistema." : "");
 		return result;
 	}

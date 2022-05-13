@@ -35,8 +35,14 @@ public class ConsumidorEntregasController {
 	}
 	
 	@GetMapping(path = "entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
-	public List<ConsumidorEntregas> listarEntregasInvalidass(@RequestParam("dataEntrega") String dataEntrega) throws JsonMappingException, JsonProcessingException{
+	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestParam("dataEntrega") String dataEntrega) throws JsonMappingException, JsonProcessingException{
 		return consumidorEntregasService.listarEntregasInvalidas(dataEntrega);
+	}
+	
+	@GetMapping(path = "entregasResp", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public List<ConsumidorEntregas> listarEntregasResponsavel(@RequestParam("dataEntrega") String dataEntrega,
+			@RequestParam("resp") String resp) {
+		return consumidorEntregasService.listarSelecionadosResponsavel(dataEntrega, resp);
 	}
 	 
 	/*@PutMapping(consumes = {MediaType.APPLICATION_JSON_VALUE},
@@ -50,12 +56,9 @@ public class ConsumidorEntregasController {
 		return "Teste! Ok!";
 	}
 	
-	@PutMapping(value="/selecionar")
+	@PutMapping(value="/atualizar")
 	public String atualizarSelecionarEntregas(@RequestBody String requestBody){
-		return consumidorEntregasService.atualizarSelecionarEntregas(requestBody);
-		//return ResponseEntity.ok().build();
-		
-		//return ResponseEntity.status()
+		return consumidorEntregasService.atualizarEntregas(requestBody);
 	}
 	
 	

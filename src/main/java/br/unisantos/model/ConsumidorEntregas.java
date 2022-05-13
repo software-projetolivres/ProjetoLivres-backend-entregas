@@ -3,9 +3,12 @@ package br.unisantos.model;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_consumidor_entregas")
@@ -26,7 +29,7 @@ public class ConsumidorEntregas implements Serializable {
 	private Boolean entregue;
 	private String data_entrega;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Usuario entregador_responsavel;
 	
 	public Long getId_consumidor() {
@@ -77,6 +80,8 @@ public class ConsumidorEntregas implements Serializable {
 	public void setSelecionado(Boolean selecionado) {
 		this.selecionado = selecionado;
 	}
+	
+	@JsonIgnore
 	public Usuario getEntregador_responsavel() {
 		return entregador_responsavel;
 	}
