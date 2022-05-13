@@ -57,7 +57,7 @@ public class ConsumidorEntregasController {
 	}
 	
 	@PutMapping(value="/atualizar")
-	public String atualizarSelecionarEntregas(@RequestBody String requestBody){
+	public String atualizarEntregas(@RequestBody String requestBody){
 		return consumidorEntregasService.atualizarEntregas(requestBody);
 	}
 	
