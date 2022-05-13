@@ -33,4 +33,7 @@ public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEn
     
     /*@Query("SELECT * FROM tb_consumidor_entregas WHERE data_entrega = :dataEntrega LIMIT 1")
     List<ConsumidorEntregas> findByDataEntregaLimit(@Param("dataEntrega") String data_entrega);*/
+	
+	@Query("DELETE FROM ConsumidorEntregas c WHERE c.id = :id")
+	void deletar(String id);
 }

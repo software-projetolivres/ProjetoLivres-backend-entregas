@@ -120,13 +120,11 @@ public class ConsumidorEntregasService {
 	}
 	
 	public String atualizarSelecionarEntregas(String requestBody){
+		String result = "Entrega(s) atualizada(s) com sucesso!";
+		Boolean msgEntregaAtribuida = false, msgEntregaInexistente = false;
 		JSONObject root = new JSONObject(requestBody);
-		JSONArray idsEntregas = root.getJSONArray("data");
-		
-		String dataEntrega = root.getString("dataEntrega");
-		System.out.println("GAAAAAAB 1 => " + dataEntrega);
 		String emailEntregador = root.getString("emailEntregador");
-		System.out.println("GAAAAAAB 2 => " + emailEntregador);
+		JSONArray idsEntregas = root.getJSONArray("data");
 		
 		Optional<Usuario> entregador = usuarioRepo.findByEmail(emailEntregador);
 		if (!entregador.isPresent()) {
@@ -135,45 +133,56 @@ public class ConsumidorEntregasService {
 
 		for (int i = 0; i < idsEntregas.length(); i++) {
 			JSONObject jsonIdsEntregas = idsEntregas.getJSONObject(i);
-
 			String id_entrega = jsonIdsEntregas.getString("id_entrega");
 			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
-			if(entrega.isPresent()) {
-				entrega.get().setSelecionado(true);
-				entrega.get().setEntregador_responsavel(entregador.get());
-			}
 			
-			alterar(entrega.get());
+			if(entrega.isPresent()) {
+				if(entrega.get().getSelecionado() == false) {
+					entrega.get().setSelecionado(true);
+					entrega.get().setEntregador_responsavel(entregador.get());
+					alterar(entrega.get());
+				} else {
+					msgEntregaAtribuida = true;
+				}
+			} else {
+				msgEntregaInexistente = true;
+			}		
 		}
-		return "ta";
+		
+		result = result + (msgEntregaAtribuida ? " Alguma(s) entrega(s) pode(m) não ter sido atribuída(s) a você "
+				+ "pois alguém já se apropriou" : "");
+		result = result + (msgEntregaInexistente ? " Alguma(s) entrega(s) selecionada(s) não existe(m) no sistema." : "");
+		return result;
 	}
 
 	public String salvar(ConsumidorEntregas consumidorEntregas) {
 		Optional<ConsumidorEntregas> consumidorExistente = repo
 				.findById(consumidorEntregas.getId());
-		
-		System.out.println("GAAAAAAAAAAAAAAB => " + consumidorExistente.get().getId());
 
 		if (consumidorExistente.isPresent()) {
-			System.out.println("EXISTE O CONSUMIDORRRR ");
 			return alterar(consumidorExistente.get());
 		}
 		
 		consumidorEntregas.setEntregue(false);
 		consumidorEntregas.setSelecionado(false);
-		System.out.println("NAO EH POSSIVEL");
 
 		repo.save(consumidorEntregas);
 		return "Registro criado com sucesso!";
 	}
 
 	public String alterar(ConsumidorEntregas consumidorEntregas) {
-		System.out.println("ENTROU AQUI JESUSR ");
-
 		ConsumidorEntregas cons = consumidorEntregas;
 		BeanUtils.copyProperties(consumidorEntregas, cons, "id");
+		
+		if(consumidorEntregas.getOpcao_entrega() == "Não") {
+			deletar(consumidorEntregas);
+		}
 		cons = repo.save(cons);
 
-		return "Registro alterado com sucesso!";
+		return "Registro(s) atualizados(s) com sucesso!";
+	}
+	
+	public void deletar(ConsumidorEntregas consumidorEntregas) {
+		repo.deletar(consumidorEntregas.getId());
 	}
 }
