@@ -1,5 +1,6 @@
 package br.unisantos.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +20,12 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
 
 import br.unisantos.functions.DataEntrega;
 import br.unisantos.model.ConsumidorEntregas;
+import br.unisantos.model.DirectionsGoogleApi;
 import br.unisantos.model.Usuario;
 import br.unisantos.repository.ConsumidorEntregasRepository;
 import br.unisantos.repository.UsuarioRepository;
@@ -34,6 +38,9 @@ public class ConsumidorEntregasService {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepo;
+	
+	@Autowired
+	private DirectionsGoogleApiService directionsAPIService;
 
 	public String montarListaEntregas(@RequestBody String responseBody)
 			throws JsonMappingException, JsonProcessingException {
@@ -81,10 +88,43 @@ public class ConsumidorEntregasService {
 		return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 	}
 
-	public String roteirizarEntregas(@RequestBody List<ConsumidorEntregas> lConsumidor) {
-		// TO DO: persistir no banco as entregas que foram selecionadas e chamar a api
-		// do google
-		return "";
+	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException {
+		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
+		String[] waypoints = new String[25];
+		JSONObject root = new JSONObject(requestBody);
+		JSONArray entregas = root.getJSONArray("entregas");
+		
+		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
+		directionsAPI.setOrigin(enderecoLivres);
+		//directionsAPI.setDestination(enderecoLivres);
+		
+		for(int i = 1; i <= entregas.length(); i++) {
+			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
+			
+			String id_entrega = jsonIdsEntregas.getString("id_entrega");
+			String endereco = jsonIdsEntregas.getString("endereco");
+			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
+			
+			if(entrega.isPresent()) {
+				endereco = endereco + " baixada santista";	//adicionado pois os endereços podem vir sem cidade e/ou CEP
+				waypoints[i] = (i%4 == 0 ? enderecoLivres : endereco);	//a cada 3 sacolas entregues, volta para a sede
+				
+				if(i == entregas.length()){
+					if(entregas.length() <= 25) {
+						directionsAPI.setDestination(enderecoLivres);
+					} else {
+						directionsAPI.setDestination(endereco);
+						//TO DO: Lógica para caso ultrapasse 25 waypoints para setar uma nova requisição
+						//onde a origem é este último endereço passado aqui neste else
+					}
+				}
+			}
+		}
+
+		//directionsAPI.setWaypoints(waypoints);	//tá dando problema
+		//directionsAPI.setWaypoints("Av Afonso Pena, 22 Apto 22 Baixada Santista", "Rua Luis Gama 205 santos");
+		return directionsAPIService.directionsApiGoogle(directionsAPI);
+		//return "yeyyy";
 	}
 
 	public String postEntregasLivresAPI(String dataEntrega) throws JsonMappingException, JsonProcessingException {

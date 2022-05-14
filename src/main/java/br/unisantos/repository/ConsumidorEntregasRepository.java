@@ -15,14 +15,11 @@ import br.unisantos.model.Usuario;
 public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEntregas, Long> {
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = false AND c.data_entrega = :data_entrega"
-			+ " AND c.endereco_entrega != '' AND c.opcao_entrega = 'Sim'")
+			+ " AND c.endereco_entrega != '' AND c.opcao_entrega = 'Sim' ORDER BY c.valor_entrega ASC")
 	List<ConsumidorEntregas> findByEntregaValidaNaoSelec(@Param("data_entrega") String data_entrega);
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = true AND c.data_entrega = :data_entrega"
 			+ " AND entregador_responsavel = :entregador_responsavel")
-	/*@Query("SELECT id, c.comunidade_consumidor, c.endereco_entrega, c.entregue, c.nome_consumidor, c.selecionado,"
-			+ " c.telefone_consumidor, c.valor_entrega FROM ConsumidorEntregas c WHERE c.selecionado = true"
-			+ " AND c.data_entrega = :data_entrega AND entregador_responsavel = :entregador_responsavel")*/
 	List<ConsumidorEntregas> findSelecionadosEntregadorResp(@Param("data_entrega") String data_entrega,
     	@Param("entregador_responsavel") Usuario entregador_responsavel);
 	

@@ -1,6 +1,8 @@
 package br.unisantos.model;
 
-import com.google.maps.GeoApiContext;
+import java.util.List;
+
+import com.google.maps.DirectionsApiRequest.Waypoint;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
 
@@ -8,14 +10,15 @@ public class DirectionsGoogleApi {
 	
 	private String origin;
 	private String destination;
-	private TravelMode mode;
-	private Unit unit; //METRIC
-	private String waypoints;
-	private Boolean optimizeWaypoints; //TRUE 
-
-	GeoApiContext context = new GeoApiContext.Builder()
-			.apiKey("AIzaSyCS0H1p4PbnrfIt6KlT9y9EqQmEZKdce_8")
-		    .build();
+	private TravelMode mode = TravelMode.BICYCLING;
+	private Unit unit = Unit.METRIC;
+	//private String[] waypoints;
+	private String[] waypoints;
+	private Boolean optimizeWaypoints = true;
+	private String region = "br";
+	
+	public DirectionsGoogleApi() {
+	}
 	
 	public String getOrigin() {
 		return origin;
@@ -49,11 +52,11 @@ public class DirectionsGoogleApi {
 		this.unit = unit;
 	}
 
-	public String getWaypoints() {
+	public String[] getWaypoints() {
 		return waypoints;
 	}
 
-	public void setWaypoints(String waypoints) {
+	public void setWaypoints(String[] waypoints) {
 		this.waypoints = waypoints;
 	}
 
@@ -64,7 +67,12 @@ public class DirectionsGoogleApi {
 	public void setOptimizeWaypoints(Boolean optimizeWaypoints) {
 		this.optimizeWaypoints = optimizeWaypoints;
 	}
-
-	public DirectionsGoogleApi() {
+	
+	public String getRegion() {
+		return region;
+	}
+	
+	public void setRegion(String region) {
+		this.region = region;
 	}
 }
