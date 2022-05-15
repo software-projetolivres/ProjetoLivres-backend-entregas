@@ -46,7 +46,7 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.listarSelecionadosResponsavel(dataEntrega, resp);
 	}
 	 
-	@PutMapping(value="/roteirizar", produces = {MediaType.APPLICATION_JSON_VALUE})
+	@PostMapping(value="/roteirizar", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException{
 		return consumidorEntregasService.roteirizarEntregas(requestBody);
 	}
