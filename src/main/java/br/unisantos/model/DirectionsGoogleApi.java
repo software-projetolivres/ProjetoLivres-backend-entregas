@@ -14,6 +14,7 @@ public class DirectionsGoogleApi {
 	private List<String> waypoints;
 	private Boolean optimizeWaypoints = true;
 	private String region = "br";
+	private String language = "pt-BR";
 	
 	public DirectionsGoogleApi() {
 	}
@@ -73,4 +74,13 @@ public class DirectionsGoogleApi {
 	public void setRegion(String region) {
 		this.region = region;
 	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
 }

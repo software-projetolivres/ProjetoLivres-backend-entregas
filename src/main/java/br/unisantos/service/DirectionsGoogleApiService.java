@@ -26,6 +26,7 @@ public class DirectionsGoogleApiService {
 			.mode(api.getMode())
 			.units(api.getUnit())
 			.region(api.getRegion())
+			.language(api.getLanguage())
 			.waypoints(api.getWaypoints().toArray(new String[api.getWaypoints().size()]))
 			.optimizeWaypoints(api.getOptimizeWaypoints()).await();
 
