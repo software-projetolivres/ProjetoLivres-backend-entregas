@@ -46,10 +46,10 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.listarSelecionadosResponsavel(dataEntrega, resp);
 	}
 	 
-	/*@PutMapping(value="/roteirizar", produces = {MediaType.APPLICATION_JSON_VALUE})
+	@PutMapping(value="/roteirizar", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException{
 		return consumidorEntregasService.roteirizarEntregas(requestBody);
-	}*/
+	}
 	
 	@PutMapping(value="/atualizar")
 	public String atualizarEntregas(@RequestBody String requestBody){

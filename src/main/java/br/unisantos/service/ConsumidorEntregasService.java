@@ -1,6 +1,7 @@
 package br.unisantos.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,15 +91,16 @@ public class ConsumidorEntregasService {
 
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
-		String[] waypoints = new String[25];
+		String[] waypointsJson = new String[25];
+		List<String> waypoints = new ArrayList<String>();
 		JSONObject root = new JSONObject(requestBody);
 		JSONArray entregas = root.getJSONArray("entregas");
 		
 		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
 		directionsAPI.setOrigin(enderecoLivres);
-		//directionsAPI.setDestination(enderecoLivres);
+		directionsAPI.setDestination(enderecoLivres);
 		
-		for(int i = 1; i <= entregas.length(); i++) {
+		for(int i = 0; i < entregas.length(); i++) {
 			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
 			
 			String id_entrega = jsonIdsEntregas.getString("id_entrega");
@@ -106,25 +108,20 @@ public class ConsumidorEntregasService {
 			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
 			
 			if(entrega.isPresent()) {
-				endereco = endereco + " baixada santista";	//adicionado pois os endereços podem vir sem cidade e/ou CEP
-				waypoints[i] = (i%4 == 0 ? enderecoLivres : endereco);	//a cada 3 sacolas entregues, volta para a sede
+				endereco = endereco + " baixada santista";
+				waypointsJson[i] = endereco;
 				
-				if(i == entregas.length()){
-					if(entregas.length() <= 25) {
-						directionsAPI.setDestination(enderecoLivres);
-					} else {
-						directionsAPI.setDestination(endereco);
-						//TO DO: Lógica para caso ultrapasse 25 waypoints para setar uma nova requisição
-						//onde a origem é este último endereço passado aqui neste else
-					}
+				if(i > 0 && i%3 == 0) {
+					waypoints.add(enderecoLivres);
+					waypoints.add(endereco);
+				} else {
+					waypoints.add(endereco);
 				}
 			}
 		}
 
-		//directionsAPI.setWaypoints(waypoints);	//tá dando problema
-		//directionsAPI.setWaypoints("Av Afonso Pena, 22 Apto 22 Baixada Santista", "Rua Luis Gama 205 santos");
+		directionsAPI.setWaypoints(waypoints);
 		return directionsAPIService.directionsApiGoogle(directionsAPI);
-		//return "yeyyy";
 	}
 
 	public String postEntregasLivresAPI(String dataEntrega) throws JsonMappingException, JsonProcessingException {

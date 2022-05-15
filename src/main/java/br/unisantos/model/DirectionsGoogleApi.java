@@ -2,7 +2,6 @@ package br.unisantos.model;
 
 import java.util.List;
 
-import com.google.maps.DirectionsApiRequest.Waypoint;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
 
@@ -12,8 +11,7 @@ public class DirectionsGoogleApi {
 	private String destination;
 	private TravelMode mode = TravelMode.BICYCLING;
 	private Unit unit = Unit.METRIC;
-	//private String[] waypoints;
-	private String[] waypoints;
+	private List<String> waypoints;
 	private Boolean optimizeWaypoints = true;
 	private String region = "br";
 	
@@ -52,11 +50,11 @@ public class DirectionsGoogleApi {
 		this.unit = unit;
 	}
 
-	public String[] getWaypoints() {
+	public List<String> getWaypoints() {
 		return waypoints;
 	}
 
-	public void setWaypoints(String[] waypoints) {
+	public void setWaypoints(List<String> waypoints) {
 		this.waypoints = waypoints;
 	}
 
