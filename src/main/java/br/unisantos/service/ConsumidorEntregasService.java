@@ -127,12 +127,12 @@ public class ConsumidorEntregasService {
 	public String postEntregasLivresAPI(String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String url = "https://livresbs.com.br/API/entregas/";
+		String url = System.getenv("url_api_entregas");
 		RestTemplate restTemplate = new RestTemplate();
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("date", dataEntrega);
-		map.add("token", System.getenv("token"));//"oFX1r63Az8RRyVbFBS69RKK96oIha0oj"
+		map.add("token", System.getenv("token"));
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 

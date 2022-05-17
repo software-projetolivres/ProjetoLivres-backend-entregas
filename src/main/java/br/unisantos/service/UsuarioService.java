@@ -49,7 +49,7 @@ public class UsuarioService implements UserDetailsService {
 		Token token = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuario);
 		tokenService.salvar(token);
 
-		return tokenGerado;
+		return "Seu cadastro foi realizado com sucesso!";
 	}
 
 	public void ativarUsuario(String email) {
@@ -68,6 +68,6 @@ public class UsuarioService implements UserDetailsService {
 				token.getUsuario());
 		tokenService.salvar(novoToken);
 
-		return tokenGerado;
+		return "Um novo token foi gerado.";
 	}
 }

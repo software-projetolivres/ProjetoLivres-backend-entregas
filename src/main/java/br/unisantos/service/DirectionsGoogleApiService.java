@@ -17,8 +17,7 @@ public class DirectionsGoogleApiService {
 	private DirectionsResult directionsResult = new DirectionsResult();
 
 	public DirectionsResult directionsApiGoogle(DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
-		GeoApiContext contexto = new GeoApiContext.Builder().apiKey("AIzaSyAiLHYgsN3ViWTyicWXARZlXGWtzz31pbY")// AIzaSyCS0H1p4PbnrfIt6KlT9y9EqQmEZKdce_8
-				.build();
+		GeoApiContext contexto = new GeoApiContext.Builder().apiKey(System.getenv("google_api_key")).build();
 
 		DirectionsApiRequest directions = new DirectionsApiRequest(contexto);
 		directionsResult = directions.origin(api.getOrigin())
