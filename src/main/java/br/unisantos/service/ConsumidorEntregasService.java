@@ -132,7 +132,7 @@ public class ConsumidorEntregasService {
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("date", dataEntrega);
-		map.add("token", "oFX1r63Az8RRyVbFBS69RKK96oIha0oj");
+		map.add("token", System.getenv("token"));//"oFX1r63Az8RRyVbFBS69RKK96oIha0oj"
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
