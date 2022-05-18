@@ -35,6 +35,12 @@ public class CadastroUsuarioService {
 	private final static String ASSUNTO_EMAIL_CONFIRMADO_SUCESSO = "Sucesso na Confirmação do Cadastro";
 
 	public ResponseEntity<String> cadastrar(CadastroUsuario cadastro) {
+		boolean usuarioCadastrado = usuarioService.findbyEmail(cadastro.getEmail()).isPresent();
+
+		if (usuarioCadastrado) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário cadastrado com este e-mail!");
+		}
+		
 		if (ValidaEmail.isEmailValido(cadastro.getEmail())) {
 			Usuario usuario = new Usuario(cadastro.getNome(), cadastro.getSobrenome(), cadastro.getEmail(),
 					cadastro.getSenha(), UsuarioTipoPerfil.USUARIO);

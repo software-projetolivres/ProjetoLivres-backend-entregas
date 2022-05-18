@@ -33,14 +33,12 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepo.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException(String.format(USUARIO_EMAIL_NAO_ENCONTRADO)));
 	}
+	
+	public Optional<Usuario> findbyEmail(String email){
+		return usuarioRepo.findByEmail(email);
+	}
 
 	public String cadastrar(Usuario usuario) {
-		boolean usuarioCadastrado = usuarioRepo.findByEmail(usuario.getEmail()).isPresent();
-
-		if (usuarioCadastrado) {
-			return "Já existe um usuário cadastrado com este e-mail!";
-		}
-
 		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());
 		usuario.setSenha(senhaCodificada);
 		usuarioRepo.save(usuario);
@@ -49,7 +47,7 @@ public class UsuarioService implements UserDetailsService {
 		Token token = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuario);
 		tokenService.salvar(token);
 
-		return "Seu cadastro foi realizado com sucesso!";
+		return token.getToken();
 	}
 
 	public void ativarUsuario(String email) {
