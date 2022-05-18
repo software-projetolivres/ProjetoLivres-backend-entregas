@@ -21,7 +21,7 @@ public class CadastroUsuarioController {
 	@Autowired
 	private CadastroUsuarioService cadastroUsuarioService;
 	
-	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
+	@PostMapping()
 	public String cadastrar(@RequestBody CadastroUsuario cadastro) {
 		return cadastroUsuarioService.cadastrar(cadastro);
 	}
