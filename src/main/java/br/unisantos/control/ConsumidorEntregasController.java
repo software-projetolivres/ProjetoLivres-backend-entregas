@@ -31,7 +31,7 @@ public class ConsumidorEntregasController {
 	@Autowired
 	private ConsumidorEntregasService consumidorEntregasService;
 	
-	@PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	@ResponseBody
 	public String montarListaEntregas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
@@ -48,12 +48,12 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.listarSelecionadosResponsavel(dataEntrega, resp);
 	}
 	 
-	@PostMapping(value="/roteirizar", produces = {MediaType.APPLICATION_JSON_VALUE})
+	@PostMapping(value="/roteirizar", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException{
 		return consumidorEntregasService.roteirizarEntregas(requestBody);
 	}
 	
-	@PutMapping(value="/atualizar")
+	@PutMapping(value="/atualizar", consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public String atualizarEntregas(@RequestBody String requestBody){
 		return consumidorEntregasService.atualizarEntregas(requestBody);
 	}

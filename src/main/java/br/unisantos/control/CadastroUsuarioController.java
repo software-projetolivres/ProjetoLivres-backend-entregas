@@ -1,6 +1,7 @@
 package br.unisantos.control;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class CadastroUsuarioController {
 	@Autowired
 	private CadastroUsuarioService cadastroUsuarioService;
 	
-	@PostMapping
+	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public String cadastrar(@RequestBody CadastroUsuario cadastro) {
 		return cadastroUsuarioService.cadastrar(cadastro);
 	}
