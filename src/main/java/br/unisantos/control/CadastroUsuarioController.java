@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.unisantos.model.CadastroUsuario;
 import br.unisantos.service.CadastroUsuarioService;
 
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/cadastroUsuario")
 public class CadastroUsuarioController {

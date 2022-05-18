@@ -23,7 +23,7 @@ import com.google.maps.model.DirectionsResult;
 import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.service.ConsumidorEntregasService;
 
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/entregas")
 public class ConsumidorEntregasController {
