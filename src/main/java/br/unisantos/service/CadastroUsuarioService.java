@@ -28,7 +28,7 @@ public class CadastroUsuarioService {
 	@Autowired
 	private EnvioEmail envioEmail;
 	
-	private final static String LINK_SITE_CONFIRM = System.getenv("link") + "/api/cadastroUsuario/";
+	private final static String LINK_SITE_CONFIRM = System.getenv("link") + "api/cadastroUsuario/";
 	private final static String EMAIL_DESTINATARIO_CONFIRMACAO = System.getenv("email_destinatario_confirm");
 	private final static String ASSUNTO_EMAIL_NOVO_CADASTRO = "Novo Entregador Cadastrado - Pendente Confirmação";
 	private final static String ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO = "Aguardando Confirmação do Cadastro";
