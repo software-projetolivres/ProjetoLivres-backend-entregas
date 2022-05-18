@@ -26,7 +26,7 @@ public class CadastroUsuarioController {
 		return cadastroUsuarioService.cadastrar(cadastro);
 	}
 
-	@PutMapping("/{token}")
+	@PutMapping(value = "/{token}")
 	public ResponseEntity<String> confirmarCadastro(@PathVariable String token) {
 		return cadastroUsuarioService.confirmarToken(token);
 	}
