@@ -28,7 +28,7 @@ public class CadastroUsuarioService {
 	@Autowired
 	private EnvioEmail envioEmail;
 	
-	private final static String LINK_SITE = System.getenv("link");
+	private final static String LINK_SITE_CONFIRM = System.getenv("link") + "/api/cadastroUsuario/";
 	private final static String EMAIL_DESTINATARIO_CONFIRMACAO = System.getenv("email_destinatario_confirm");
 	private final static String ASSUNTO_EMAIL_NOVO_CADASTRO = "Novo Entregador Cadastrado - Pendente Confirmação";
 	private final static String ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO = "Aguardando Confirmação do Cadastro";
@@ -40,7 +40,7 @@ public class CadastroUsuarioService {
 					cadastro.getSenha(), UsuarioTipoPerfil.USUARIO);
 
 			String token = usuarioService.cadastrar(usuario);
-			String link = LINK_SITE + token;
+			String link = LINK_SITE_CONFIRM + token;
 			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
 					ConstrucaoEmail.emailConfirmacaoPendente(usuario.getNome(), usuario.getSobrenome(), link),
 					ASSUNTO_EMAIL_NOVO_CADASTRO);
@@ -67,7 +67,7 @@ public class CadastroUsuarioService {
 			}
 			
 			usuarioService.gerarNovoToken(token);
-			String link = LINK_SITE + token;
+			String link = LINK_SITE_CONFIRM + token;
 			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
 					ConstrucaoEmail.emailConfirmacaoPendente(token.getUsuario().getNome(),
 							token.getUsuario().getSobrenome(), link), ASSUNTO_EMAIL_NOVO_CADASTRO);
