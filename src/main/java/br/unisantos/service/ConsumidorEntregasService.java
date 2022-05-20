@@ -11,7 +11,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -160,7 +162,7 @@ public class ConsumidorEntregasService {
 		return lista;
 	}
 	
-	public String atualizarEntregas(String requestBody){
+	public ResponseEntity<String> atualizarEntregas(String requestBody){
 		String result = "Entrega(s) atualizada(s) com sucesso!";
 		Boolean msgEntregaAtribuida = false, msgEntregaInexistente = false;
 		JSONObject root = new JSONObject(requestBody);
@@ -169,7 +171,7 @@ public class ConsumidorEntregasService {
 		
 		Optional<Usuario> entregador = usuarioRepo.findByEmail(emailEntregador);
 		if (!entregador.isPresent()) {
-			return "Este e-mail não pertence a nenhum entregador cadastrado no sistema.";
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail não pertence a nenhum entregador cadastrado no sistema.");
 		}
 
 		for (int i = 0; i < idsEntregas.length(); i++) {
@@ -205,7 +207,7 @@ public class ConsumidorEntregasService {
 		result = result + (msgEntregaAtribuida ? " Alguma(s) entrega(s) pode(m) não ter sido atribuída(s) a você "
 				+ "pois alguém já se apropriou." : "");
 		result = result + (msgEntregaInexistente ? " Alguma(s) entrega(s) selecionada(s) não existe(m) no sistema." : "");
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 	public String salvar(ConsumidorEntregas consumidorEntregas) {
