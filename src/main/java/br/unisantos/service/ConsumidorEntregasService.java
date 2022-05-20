@@ -148,6 +148,7 @@ public class ConsumidorEntregasService {
 	}
 
 	public List<ConsumidorEntregas> listarSelecionadosResponsavel(String dataEntrega, String email) {
+		
 		Optional<Usuario> entregador = usuarioRepo.findByEmail(email);
 		if (!entregador.isPresent()) {
 			return null;
