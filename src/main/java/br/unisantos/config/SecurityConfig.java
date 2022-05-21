@@ -28,8 +28,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable().authorizeRequests().antMatchers("api/cadastroUsuario/**").///api/**
 			permitAll().anyRequest().authenticated().and().formLogin().defaultSuccessUrl("http://localhost:5000/entregas", true).and().httpBasic();
 		
+		http.logout().logoutSuccessUrl("http://localhost:5000");
+		
 		http.cors();
-		//.loginPage("http://localhost:5000/login")
 	}
 	
 	@Override

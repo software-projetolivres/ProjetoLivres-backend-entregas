@@ -59,9 +59,4 @@ public class ConsumidorEntregasController {
 		return consumidorEntregasService.atualizarEntregas(requestBody);
 	}
 	
-	@GetMapping
-	public String teste() {
-		return "Teste GET! Ok!";
-	}
-	
 }
