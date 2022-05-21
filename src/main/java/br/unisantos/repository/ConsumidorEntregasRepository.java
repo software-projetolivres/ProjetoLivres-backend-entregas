@@ -19,7 +19,7 @@ public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEn
 	List<ConsumidorEntregas> findByEntregaValidaNaoSelec(@Param("data_entrega") String data_entrega);
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = true AND c.data_entrega = :data_entrega"
-			+ " AND entregador_responsavel = :entregador_responsavel")
+			+ " AND c.entregador_responsavel = :entregador_responsavel AND c.entregue = false")
 	List<ConsumidorEntregas> findSelecionadosEntregadorResp(@Param("data_entrega") String data_entrega,
     	@Param("entregador_responsavel") Usuario entregador_responsavel);
 	
