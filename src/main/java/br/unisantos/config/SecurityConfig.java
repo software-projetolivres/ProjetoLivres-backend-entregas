@@ -24,9 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
-		//nós permitiremos qualquer requisição que for para o endpoint passado
-		http.csrf().disable().authorizeRequests().antMatchers("api/cadastroUsuario/**").///api/**
-			permitAll().anyRequest().authenticated().and().formLogin().defaultSuccessUrl("http://localhost:5000/entregas", true).and().httpBasic();
+		http.csrf().disable().authorizeRequests().antMatchers("api/cadastroUsuario/**")
+			.permitAll().anyRequest().authenticated().and().formLogin().defaultSuccessUrl("http://localhost:5000/entregas", true)
+			.failureUrl("/login").and().httpBasic();
 		
 		http.logout().logoutSuccessUrl("http://localhost:5000");
 		
