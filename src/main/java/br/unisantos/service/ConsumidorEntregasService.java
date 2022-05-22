@@ -101,7 +101,7 @@ public class ConsumidorEntregasService {
 		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
 		directionsAPI.setOrigin(enderecoLivres);
 		directionsAPI.setDestination(enderecoLivres);
-		directionsAPI.setOptimizeWaypoints(true);
+		directionsAPI.setOptimizeWaypoints(false);
 		
 		for(int i = 0; i < entregas.length(); i++) {
 			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
