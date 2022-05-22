@@ -100,7 +100,7 @@ public class ConsumidorEntregasService {
 		
 		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
 		directionsAPI.setOrigin(enderecoLivres);
-		//directionsAPI.setDestination(enderecoLivres);
+		directionsAPI.setDestination(enderecoLivres);
 		
 		for(int i = 0; i < entregas.length(); i++) {
 			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
@@ -115,11 +115,7 @@ public class ConsumidorEntregasService {
 
 				if(i > 0 && i%3 == 0) {
 					waypoints.add(enderecoLivres);
-					if(i == (entregas.length() - 1)) {
-						directionsAPI.setDestination(endereco);
-					} else {
-						waypoints.add(endereco);
-					}
+					waypoints.add(endereco);
 				} else {
 					waypoints.add(endereco);
 				}
