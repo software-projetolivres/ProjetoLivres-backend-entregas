@@ -112,16 +112,16 @@ public class ConsumidorEntregasService {
 			if(entrega.isPresent()) {
 				endereco = endereco + " baixada santista";
 				waypointsJson[i] = endereco;
-				
-				if(i == (entregas.length() - 1)) {
-					directionsAPI.setDestination(endereco);
-				} else {
-					if(i > 0 && i%3 == 0) {
-						waypoints.add(enderecoLivres);
-						waypoints.add(endereco);
+
+				if(i > 0 && i%3 == 0) {
+					waypoints.add(enderecoLivres);
+					if(i == (entregas.length() - 1)) {
+						directionsAPI.setDestination(endereco);
 					} else {
 						waypoints.add(endereco);
 					}
+				} else {
+					waypoints.add(endereco);
 				}
 			}
 		}
