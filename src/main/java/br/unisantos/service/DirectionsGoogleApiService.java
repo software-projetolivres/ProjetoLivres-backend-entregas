@@ -32,8 +32,10 @@ public class DirectionsGoogleApiService {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
 		List<String> waypoints = new ArrayList<String>();
 		api.setOptimizeWaypoints(false);
+		System.out.println("DEBUGGGGGGGGGGGGGGGGGGG => ");
 		
 		for(int i = 1; i < directionsResult.routes[0].legs.length; i++) {
+			System.out.println("\ni: " + i + "startAddress: " + directionsResult.routes[0].legs[i].startAddress);
 			if(i > 0 && i%3 == 0) {
 				waypoints.add(enderecoLivres);
 				if(i == (directionsResult.routes[0].legs.length - 1)) {
