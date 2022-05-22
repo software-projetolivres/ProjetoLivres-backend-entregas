@@ -121,6 +121,22 @@ public class ConsumidorEntregasService {
 				} else {
 					waypoints.add(endereco);
 				}*/
+				
+				if(i > 0 && i%3 == 0) {
+					System.out.println("\n GAAAAAAAAAAABI 1");
+					waypoints.add(enderecoLivres);
+					if(i == (entregas.length() - 1)) {
+						System.out.println("\n GAAAAAAAAAAABI 2");
+						directionsAPI.setDestination(endereco);
+					} else {
+						System.out.println("\n GAAAAAAAAAAABI 3");
+						waypoints.add(endereco);
+					}
+				} else if(i > 0) {
+					System.out.println("\n GAAAAAAAAAAABI 4");
+					waypoints.add(endereco);
+				}
+				
 			}
 		}
 

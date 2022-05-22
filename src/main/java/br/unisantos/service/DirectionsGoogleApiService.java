@@ -25,7 +25,8 @@ public class DirectionsGoogleApiService {
 			System.out.println("\nStart Address => " + directionsResult.routes[0].legs[i].startAddress);
 			System.out.println("\nEnd Address => " + directionsResult.routes[0].legs[i].endAddress);
 		}
-		return addLivresWaypoints(directionsResult, api);
+		return directionsResult;
+		//return addLivresWaypoints(directionsResult, api); 
 	}
 	
 	public DirectionsResult addLivresWaypoints(DirectionsResult directionsResult, DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
