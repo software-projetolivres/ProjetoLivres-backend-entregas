@@ -106,8 +106,8 @@ public class ConsumidorEntregasService {
 			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
 			
 			String id_entrega = jsonIdsEntregas.getString("id_entrega");
-			String endereco = jsonIdsEntregas.getString("endereco");
 			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
+			String endereco = entrega.get().getEndereco_entrega();
 			
 			if(entrega.isPresent()) {
 				endereco = endereco + " baixada santista";
