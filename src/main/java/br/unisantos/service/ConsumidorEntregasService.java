@@ -113,7 +113,7 @@ public class ConsumidorEntregasService {
 			if(entrega.isPresent()) {
 				endereco = endereco + " baixada santista";
 				waypointsJson[i] = endereco;
-				waypoints.add(endereco);
+				//waypoints.add(endereco);
 
 				/*if(i > 0 && i%3 == 0) {
 					waypoints.add(enderecoLivres);
