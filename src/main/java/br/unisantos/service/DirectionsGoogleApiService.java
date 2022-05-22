@@ -29,8 +29,8 @@ public class DirectionsGoogleApiService {
 		List<String> waypoints = new ArrayList<String>();
 		api.setOptimizeWaypoints(false);
 		
-		for(int i = 0; i < directionsResult.routes[0].legs.length; i++) {
-			if(i > 0 && i%3 == 0) {	//verificar se o % ta certo.
+		for(int i = 1; i < directionsResult.routes[0].legs.length; i++) {
+			if(i > 0 && i%3 == 0) {
 				waypoints.add(enderecoLivres);
 				if(i == (directionsResult.routes[0].legs.length - 1)) {
 					api.setDestination(directionsResult.routes[0].legs[i].startAddress);
