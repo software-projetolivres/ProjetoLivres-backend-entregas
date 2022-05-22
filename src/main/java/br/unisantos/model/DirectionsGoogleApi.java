@@ -12,7 +12,7 @@ public class DirectionsGoogleApi {
 	private TravelMode mode = TravelMode.BICYCLING;
 	private Unit unit = Unit.METRIC;
 	private List<String> waypoints;
-	private Boolean optimizeWaypoints = true;
+	private Boolean optimizeWaypoints;
 	private String region = "br";
 	private String language = "pt-BR";
 	

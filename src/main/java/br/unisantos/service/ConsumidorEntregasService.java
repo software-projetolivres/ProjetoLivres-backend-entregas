@@ -101,6 +101,7 @@ public class ConsumidorEntregasService {
 		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
 		directionsAPI.setOrigin(enderecoLivres);
 		directionsAPI.setDestination(enderecoLivres);
+		directionsAPI.setOptimizeWaypoints(true);
 		
 		for(int i = 0; i < entregas.length(); i++) {
 			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
@@ -112,13 +113,14 @@ public class ConsumidorEntregasService {
 			if(entrega.isPresent()) {
 				endereco = endereco + " baixada santista";
 				waypointsJson[i] = endereco;
+				waypoints.add(endereco);
 
-				if(i > 0 && i%3 == 0) {
+				/*if(i > 0 && i%3 == 0) {
 					waypoints.add(enderecoLivres);
 					waypoints.add(endereco);
 				} else {
 					waypoints.add(endereco);
-				}
+				}*/
 			}
 		}
 
