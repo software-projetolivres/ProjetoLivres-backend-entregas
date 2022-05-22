@@ -132,7 +132,7 @@ public class ConsumidorEntregasService {
 						System.out.println("\n GAAAAAAAAAAABI 3");
 						waypoints.add(endereco);
 					}
-				} else if(i > 0) {
+				} else {
 					System.out.println("\n GAAAAAAAAAAABI 4");
 					waypoints.add(endereco);
 				}
