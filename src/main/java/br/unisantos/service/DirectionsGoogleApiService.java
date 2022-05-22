@@ -52,6 +52,7 @@ public class DirectionsGoogleApiService {
 			}
 		}
 		
+		api.setWaypoints(waypoints);
 		return directionsApiGoogleRes(api);
 	}
 	
