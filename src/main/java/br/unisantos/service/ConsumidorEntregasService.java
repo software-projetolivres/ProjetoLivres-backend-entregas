@@ -93,7 +93,6 @@ public class ConsumidorEntregasService {
 
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
-		String[] waypointsJson = new String[25];
 		List<String> waypoints = new ArrayList<String>();
 		JSONObject root = new JSONObject(requestBody);
 		JSONArray entregas = root.getJSONArray("entregas");
@@ -112,15 +111,7 @@ public class ConsumidorEntregasService {
 			
 			if(entrega.isPresent()) {
 				endereco = endereco + " baixada santista";
-				waypointsJson[i] = endereco;
-				waypoints.add(endereco);
-
-				/*if(i > 0 && i%3 == 0) {
-					waypoints.add(enderecoLivres);
-					waypoints.add(endereco);
-				} else {
-					waypoints.add(endereco);
-				}*/				
+				waypoints.add(endereco);	
 			}
 		}
 
