@@ -39,13 +39,14 @@ public class DirectionsGoogleApiService {
 			System.out.println("\ni: " + i + "startAddress: " + directionsResult.routes[0].legs[i].startAddress);
 			if(i > 0 && i%3 == 0) {
 				System.out.println("\n GAAAAAAAAAAABI 1");
-				waypoints.add(enderecoLivres);
-				if(i == (directionsResult.routes[0].legs.length - 1)) {
+				if(i == (directionsResult.routes[0].legs.length - 1)) {	//se estiver na última iteração
 					System.out.println("\n GAAAAAAAAAAABI 2");
+					waypoints.add(enderecoLivres);
 					api.setDestination(directionsResult.routes[0].legs[i].startAddress);
 				} else {
 					System.out.println("\n GAAAAAAAAAAABI 3");
 					waypoints.add(directionsResult.routes[0].legs[i].startAddress);
+					waypoints.add(enderecoLivres);
 				}
 			} else if(i > 0) {
 				System.out.println("\n GAAAAAAAAAAABI 4");
