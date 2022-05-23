@@ -20,12 +20,6 @@ public class DirectionsGoogleApiService {
 
 	public DirectionsResult directionsApiGoogle(DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
 		directionsResult = directionsApiGoogleRes(api);
-
-		for(int i = 0; i < directionsResult.routes[0].legs.length; i++) {
-			System.out.println("\nStart Address => " + directionsResult.routes[0].legs[i].startAddress);
-			System.out.println("\nEnd Address => " + directionsResult.routes[0].legs[i].endAddress);
-		}
-		//return directionsResult;
 		return addLivresWaypoints(directionsResult, api); 
 	}
 	
@@ -33,7 +27,6 @@ public class DirectionsGoogleApiService {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
 		List<String> waypoints = new ArrayList<String>();
 		api.setOptimizeWaypoints(false);
-		System.out.println("DEBUGGGGGGGGGGGGGGGGGGG => ");
 		
 		for(int i = 0; i < directionsResult.routes[0].legs.length; i++) {
 			if(i > 0 && i%3 == 0) {
