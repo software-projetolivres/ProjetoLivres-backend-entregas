@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
-			.antMatchers("/api/cadastroUsuario").permitAll()
+			.antMatchers("/api/cadastroUsuario/**").permitAll()
 			.anyRequest().authenticated().and().formLogin()
 			.defaultSuccessUrl(System.getenv("link_site") + "entregas", true)
 			.failureUrl(System.getenv("link_site") + "login").and().httpBasic();
