@@ -66,8 +66,7 @@ public class ConsumidorEntregasService {
 			Long id_consumidor = jsonConsumidor.getLong("id_consumidor");
 			String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
 			Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
-			//Integer telefone_consumidor = jsonConsumidor.getInt("telefone_consumidor");
-			//Object telefone_consumidor = jsonConsumidor.opt("telefone_consumidor"); //Devolve um Long
+			String telefone_consumidor = jsonConsumidor.getString("telefone_consumidor");
 			String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
 			String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
 			Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
@@ -79,7 +78,7 @@ public class ConsumidorEntregasService {
 				consumidorEntregas.setId_consumidor(id_consumidor);
 				consumidorEntregas.setNome_consumidor(nome_consumidor);
 				consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
-				//consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
+				consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
 				consumidorEntregas.setEndereco_entrega(endereco_entrega);
 				consumidorEntregas.setOpcao_entrega(opcao_entrega);
 				consumidorEntregas.setValor_entrega(valor_entrega);

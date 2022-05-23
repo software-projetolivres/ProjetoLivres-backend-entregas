@@ -21,7 +21,7 @@ public class ConsumidorEntregas implements Serializable {
 	private Long id_consumidor;
 	private String nome_consumidor;
 	private Integer comunidade_consumidor;
-	private Long telefone_consumidor;
+	private String telefone_consumidor;
 	private String endereco_entrega;
 	private String opcao_entrega;
 	private Double valor_entrega;
@@ -50,10 +50,10 @@ public class ConsumidorEntregas implements Serializable {
 	public void setComunidade_consumidor(Integer comunidade_consumidor) {
 		this.comunidade_consumidor = comunidade_consumidor;
 	}
-	public Long getTelefone_consumidor() {
+	public String getTelefone_consumidor() {
 		return telefone_consumidor;
 	}
-	public void setTelefone_consumidor(Long telefone_consumidor) {
+	public void setTelefone_consumidor(String telefone_consumidor) {
 		this.telefone_consumidor = telefone_consumidor;
 	}
 	public String getEndereco_entrega() {
