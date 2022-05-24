@@ -19,11 +19,11 @@ public class EmailService implements EnvioEmail {
 	
 	@Override
 	@Async //para não bloquear o cliente 
-	public void enviar(String destinatario, String email, String assunto) {
+	public void enviar(String destinatarios, String email, String assunto) {
 		try {
 			MimeMessage mimeMsg = javaMailSender.createMimeMessage();
 			MimeMessageHelper mimeHelper = new MimeMessageHelper(mimeMsg, "utf-8");
-			mimeHelper.setTo(destinatario);
+			mimeHelper.setTo(separaDestinatarios(destinatarios));
 			mimeHelper.setFrom("livresprojetosoftware@gmail.com");
 			mimeHelper.setSubject(assunto);
 			mimeHelper.setText(email, true);
@@ -32,6 +32,17 @@ public class EmailService implements EnvioEmail {
 			throw new IllegalStateException("Não foi possível enviar o e-mail!");
 		}
 		
+	}
+	
+	private String[] separaDestinatarios(String destinatarios) {
+		String result[];
+		if(destinatarios.contains(",")) {
+			result = destinatarios.split(",");
+			return result;
+		} else {
+			String destin[] = {destinatarios};
+			return destin;
+		}		
 	}
 
 }
