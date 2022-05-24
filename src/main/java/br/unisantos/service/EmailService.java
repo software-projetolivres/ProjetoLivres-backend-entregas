@@ -1,6 +1,7 @@
 package br.unisantos.service;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class EmailService implements EnvioEmail {
 		try {
 			MimeMessage mimeMsg = javaMailSender.createMimeMessage();
 			MimeMessageHelper mimeHelper = new MimeMessageHelper(mimeMsg, "utf-8");
-			mimeHelper.setTo(destinatarios);
+			mimeHelper.setTo(InternetAddress.parse(destinatarios));
 			mimeHelper.setFrom("livresprojetosoftware@gmail.com");
 			mimeHelper.setSubject(assunto);
 			mimeHelper.setText(email, true);
