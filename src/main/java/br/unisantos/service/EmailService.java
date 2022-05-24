@@ -23,7 +23,7 @@ public class EmailService implements EnvioEmail {
 		try {
 			MimeMessage mimeMsg = javaMailSender.createMimeMessage();
 			MimeMessageHelper mimeHelper = new MimeMessageHelper(mimeMsg, "utf-8");
-			mimeHelper.setTo(separaDestinatarios(destinatarios));
+			mimeHelper.setTo(destinatarios);
 			mimeHelper.setFrom("livresprojetosoftware@gmail.com");
 			mimeHelper.setSubject(assunto);
 			mimeHelper.setText(email, true);
@@ -33,10 +33,4 @@ public class EmailService implements EnvioEmail {
 		}
 		
 	}
-	
-	private String[] separaDestinatarios(String destinatarios) {
-		String result[] = destinatarios.split(",");
-		return result;	
-	}
-
 }
