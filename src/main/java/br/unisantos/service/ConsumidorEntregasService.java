@@ -58,6 +58,7 @@ public class ConsumidorEntregasService {
 			throws JsonMappingException, JsonProcessingException {
 
 		JSONObject root = new JSONObject(consumidorEntregasResponse);
+		
 		if(root.has("data")) {
 			JSONArray consumidores = root.getJSONArray("data");
 
@@ -90,7 +91,8 @@ public class ConsumidorEntregasService {
 			
 			return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 		} else {
-			return root.getString("message");
+			String msg = root.getString("message");
+			return msg;
 		}
 	}
 
