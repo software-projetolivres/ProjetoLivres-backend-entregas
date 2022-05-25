@@ -27,7 +27,7 @@ public class CadastroUsuarioController {
 		return cadastroUsuarioService.cadastrar(cadastro);
 	}
 
-	@GetMapping(value = "/{token}")
+	@GetMapping(value = "/{token}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<String> confirmarCadastro(@PathVariable String token) {
 		return cadastroUsuarioService.confirmarToken(token);
 	}
