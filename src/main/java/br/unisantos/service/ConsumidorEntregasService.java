@@ -135,7 +135,7 @@ public class ConsumidorEntregasService {
 	}
 
 	public List<ConsumidorEntregas> listarNaoSelecionados(String dataEntrega) {
-		List<ConsumidorEntregas> lista = repo.findByEntregaValidaNaoSelec(dataEntrega);
+		List<ConsumidorEntregas> lista = repo.entregasValidasNaoSelecionadas(dataEntrega);
 		return lista;
 	}
 
@@ -146,12 +146,12 @@ public class ConsumidorEntregasService {
 			return null;
 		}
 		
-		List<ConsumidorEntregas> lista = repo.findSelecionadosEntregadorResp(dataEntrega, entregador.get());
+		List<ConsumidorEntregas> lista = repo.entregasSelecionadasPorEntregador(dataEntrega, entregador.get());
 		return lista;
 	}
 
 	public List<ConsumidorEntregas> listarEntregasInvalidas(String dataEntrega) {
-		List<ConsumidorEntregas> lista = repo.findByEntregaAndEnderecoEmpty(dataEntrega);
+		List<ConsumidorEntregas> lista = repo.entregasInvalidas(dataEntrega);
 		return lista;
 	}
 	

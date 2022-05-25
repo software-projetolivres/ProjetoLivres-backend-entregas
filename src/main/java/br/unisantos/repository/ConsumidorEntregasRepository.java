@@ -16,16 +16,16 @@ public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEn
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = false AND c.data_entrega = :data_entrega"
 			+ " AND c.endereco_entrega != '' AND c.opcao_entrega = 'Sim' ORDER BY c.valor_entrega ASC")
-	List<ConsumidorEntregas> findByEntregaValidaNaoSelec(@Param("data_entrega") String data_entrega);
+	List<ConsumidorEntregas> entregasValidasNaoSelecionadas(@Param("data_entrega") String data_entrega);
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.selecionado = true AND c.data_entrega = :data_entrega"
 			+ " AND c.entregador_responsavel = :entregador_responsavel AND c.entregue = false ORDER BY c.valor_entrega ASC")
-	List<ConsumidorEntregas> findSelecionadosEntregadorResp(@Param("data_entrega") String data_entrega,
+	List<ConsumidorEntregas> entregasSelecionadasPorEntregador(@Param("data_entrega") String data_entrega,
     	@Param("entregador_responsavel") Usuario entregador_responsavel);
 	
 	@Query("SELECT c FROM ConsumidorEntregas c WHERE c.opcao_entrega = 'Sim' AND"
 			+ " (c.endereco_entrega = '' OR c.endereco_entrega = null) AND c.data_entrega = :data_entrega")
-    List<ConsumidorEntregas> findByEntregaAndEnderecoEmpty(@Param("data_entrega") String data_entrega);
+    List<ConsumidorEntregas> entregasInvalidas(@Param("data_entrega") String data_entrega);
 	
 	Optional<ConsumidorEntregas> findById(String id);
 	
