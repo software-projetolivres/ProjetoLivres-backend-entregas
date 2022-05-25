@@ -22,12 +22,12 @@ public class CadastroUsuarioController {
 	@Autowired
 	private CadastroUsuarioService cadastroUsuarioService;
 	
-	@PostMapping()
+	@PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<String> cadastrar(@RequestBody CadastroUsuario cadastro) {
 		return cadastroUsuarioService.cadastrar(cadastro);
 	}
 
-	@GetMapping(value = "/{token}", produces = {MediaType.APPLICATION_JSON_VALUE})
+	@GetMapping(value = "/{token}")
 	public ResponseEntity<String> confirmarCadastro(@PathVariable String token) {
 		return cadastroUsuarioService.confirmarToken(token);
 	}
