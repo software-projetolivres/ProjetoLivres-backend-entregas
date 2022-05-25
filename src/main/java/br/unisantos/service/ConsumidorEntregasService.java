@@ -91,8 +91,7 @@ public class ConsumidorEntregasService {
 			
 			return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 		} else {
-			String msg = root.getString("message");
-			return msg;
+			return new ObjectMapper().writeValueAsString(root.getString("message"));
 		}
 	}
 
