@@ -30,13 +30,8 @@ public class DirectionsGoogleApiService {
 		
 		for(int i = 0; i < directionsResult.routes[0].legs.length; i++) {
 			if(i > 0 && i%3 == 0) {
-				if(i == (directionsResult.routes[0].legs.length - 1)) {	//se estiver na última iteração
-					waypoints.add(enderecoLivres);
-					api.setDestination(directionsResult.routes[0].legs[i].startAddress);
-				} else {
-					waypoints.add(directionsResult.routes[0].legs[i].startAddress);
-					waypoints.add(enderecoLivres);
-				}
+				waypoints.add(directionsResult.routes[0].legs[i].startAddress);
+				waypoints.add(enderecoLivres);
 			} else if(i > 0) {
 				waypoints.add(directionsResult.routes[0].legs[i].startAddress);
 			}
