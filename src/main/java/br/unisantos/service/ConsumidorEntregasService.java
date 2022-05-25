@@ -58,36 +58,40 @@ public class ConsumidorEntregasService {
 			throws JsonMappingException, JsonProcessingException {
 
 		JSONObject root = new JSONObject(consumidorEntregasResponse);
-		JSONArray consumidores = root.getJSONArray("data");
+		if(root.has("data")) {
+			JSONArray consumidores = root.getJSONArray("data");
 
-		for (int i = 0; i < consumidores.length(); i++) {
-			JSONObject jsonConsumidor = consumidores.getJSONObject(i);
+			for (int i = 0; i < consumidores.length(); i++) {
+				JSONObject jsonConsumidor = consumidores.getJSONObject(i);
 
-			Long id_consumidor = jsonConsumidor.getLong("id_consumidor");
-			String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
-			Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
-			String telefone_consumidor = jsonConsumidor.getString("telefone_consumidor");
-			String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
-			String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
-			Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
+				Long id_consumidor = jsonConsumidor.getLong("id_consumidor");
+				String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
+				Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
+				String telefone_consumidor = jsonConsumidor.getString("telefone_consumidor");
+				String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
+				String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
+				Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
 
-			if (opcao_entrega != "Não" && opcao_entrega != null && opcao_entrega != "") {
-				ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
-				
-				consumidorEntregas.setId(dataEntrega + "c" + id_consumidor);
-				consumidorEntregas.setId_consumidor(id_consumidor);
-				consumidorEntregas.setNome_consumidor(nome_consumidor);
-				consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
-				consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
-				consumidorEntregas.setEndereco_entrega(endereco_entrega);
-				consumidorEntregas.setOpcao_entrega(opcao_entrega);
-				consumidorEntregas.setValor_entrega(valor_entrega);
-				consumidorEntregas.setData_entrega(dataEntrega);
-				salvar(consumidorEntregas);
+				if (opcao_entrega != "Não" && opcao_entrega != null && opcao_entrega != "") {
+					ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
+					
+					consumidorEntregas.setId(dataEntrega + "c" + id_consumidor);
+					consumidorEntregas.setId_consumidor(id_consumidor);
+					consumidorEntregas.setNome_consumidor(nome_consumidor);
+					consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
+					consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
+					consumidorEntregas.setEndereco_entrega(endereco_entrega);
+					consumidorEntregas.setOpcao_entrega(opcao_entrega);
+					consumidorEntregas.setValor_entrega(valor_entrega);
+					consumidorEntregas.setData_entrega(dataEntrega);
+					salvar(consumidorEntregas);
+				}
 			}
+			
+			return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
+		} else {
+			return root.getString("message");
 		}
-		
-		return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
 	}
 
 	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException {
