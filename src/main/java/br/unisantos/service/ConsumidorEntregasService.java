@@ -213,6 +213,9 @@ public class ConsumidorEntregasService {
 				.findById(consumidorEntregas.getId());
 
 		if (consumidorExistente.isPresent()) {
+			consumidorEntregas.setEntregue(consumidorExistente.get().getEntregue());
+			consumidorEntregas.setSelecionado(consumidorExistente.get().getSelecionado());
+			consumidorEntregas.setEntregador_responsavel(consumidorExistente.get().getEntregador_responsavel());
 			return alterar(consumidorExistente.get());
 		}
 		
@@ -236,6 +239,6 @@ public class ConsumidorEntregasService {
 	}
 	
 	public void deletar(ConsumidorEntregas consumidorEntregas) {
-		repo.deletar(consumidorEntregas.getId());
+		repo.deleteById(consumidorEntregas.getId());
 	}
 }
