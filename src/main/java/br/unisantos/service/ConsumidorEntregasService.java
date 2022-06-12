@@ -73,7 +73,7 @@ public class ConsumidorEntregasService {
 				String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
 				Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
 
-				if (opcao_entrega != "Não" && opcao_entrega != null && opcao_entrega != "") {
+				if (opcao_entrega.equals("Sim") && opcao_entrega != null && !opcao_entrega.isEmpty()) {
 					ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
 					
 					consumidorEntregas.setId(dataEntrega + "c" + id_consumidor);
