@@ -27,7 +27,7 @@ public interface ConsumidorEntregasRepository extends JpaRepository<ConsumidorEn
 			+ " (c.endereco_entrega = '' OR c.endereco_entrega = null) AND c.data_entrega = :data_entrega")
    	List<ConsumidorEntregas> entregasInvalidas(@Param("data_entrega") String data_entrega);
 	
-	Optional<ConsumidorEntregas> findById(String id);
+	Optional<ConsumidorEntregas> findById(String id); //declarado pois sobrescrevo o tipo do atributo do parâmetro
 	
-	void deleteById(String id);
+	void deleteById(String id); //declarado pois sobrescrevo o tipo do atributo do parâmetro
 }
