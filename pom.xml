@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.unisantos</groupId>
-	<artifactId>ProjetoLivres-entregas</artifactId>
+	<artifactId>java-getting-started</artifactId>
 	<version>1.0</version>
 
 	<parent>
@@ -13,7 +13,7 @@
 		<version>2.3.0.RELEASE</version>
 		<relativePath />
 	</parent>
-	<name>ProjetoLivres-entregas</name>
+	<name>java-getting-started</name>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -128,6 +128,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
