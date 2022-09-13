@@ -57,8 +57,8 @@ public class Usuario implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	@NonNull
 	private UsuarioTipoPerfil usuarioTipoPerfil;
-	private Boolean bloqueado = false;
-	private Boolean ativo = false;
+	private Boolean bloqueado;
+	private Boolean ativo;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
