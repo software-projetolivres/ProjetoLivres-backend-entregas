@@ -8,12 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.unisantos.dto.TokenDTO;
+import br.unisantos.dto.UsuarioDTO;
 import br.unisantos.email.EnvioEmail;
 import br.unisantos.functions.ConstrucaoEmail;
 import br.unisantos.functions.ValidaEmail;
-import br.unisantos.model.CadastroUsuario;
+import br.unisantos.mapper.TokenMapper;
 import br.unisantos.model.Token;
-import br.unisantos.model.Usuario;
 import br.unisantos.model.UsuarioTipoPerfil;
 
 @Service
@@ -28,30 +29,34 @@ public class CadastroUsuarioService {
 	@Autowired
 	private EnvioEmail envioEmail;
 	
+	@Autowired
+	private TokenMapper tokenMapper;
+	
 	private final static String LINK_SITE_CONFIRM = System.getenv("link") + "api/cadastroUsuario/";
 	private final static String EMAIL_DESTINATARIO_CONFIRMACAO = System.getenv("email_destinatario_confirm");
 	private final static String ASSUNTO_EMAIL_NOVO_CADASTRO = "Novo Entregador Cadastrado - Pendente Confirmação";
 	private final static String ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO = "Aguardando Confirmação do Cadastro";
 	private final static String ASSUNTO_EMAIL_CONFIRMADO_SUCESSO = "Sucesso na Confirmação do Cadastro";
 
-	public ResponseEntity<String> cadastrar(CadastroUsuario cadastro) {
+	public ResponseEntity<String> cadastrar(UsuarioDTO cadastro) {
 		boolean usuarioCadastrado = usuarioService.findbyEmail(cadastro.getEmail()).isPresent();
 
 		if (usuarioCadastrado) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário cadastrado com este e-mail!");
 		}
 		
-		if (ValidaEmail.isEmailValido(cadastro.getEmail())) {
-			Usuario usuario = new Usuario(cadastro.getNome(), cadastro.getSobrenome(), cadastro.getEmail(),
-					cadastro.getSenha(), UsuarioTipoPerfil.USUARIO);
+		if (ValidaEmail.isEmailValido(cadastro.getEmail())) {			
+			cadastro.setUsuarioTipoPerfil(UsuarioTipoPerfil.USUARIO);
+			cadastro.setBloqueado(false);
+			cadastro.setAtivo(false);
 
-			String token = usuarioService.cadastrar(usuario);
+			String token = usuarioService.cadastrar(cadastro);
 			String link = LINK_SITE_CONFIRM + token;
 			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
-					ConstrucaoEmail.emailConfirmacaoPendente(usuario.getNome(), usuario.getSobrenome(), link),
+					ConstrucaoEmail.emailConfirmacaoPendente(cadastro.getNome(), cadastro.getSobrenome(), link),
 					ASSUNTO_EMAIL_NOVO_CADASTRO);
-			envioEmail.enviar(usuario.getEmail(),
-					ConstrucaoEmail.emailAguardeConfirmacao(usuario.getNome()), ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO);
+			envioEmail.enviar(cadastro.getEmail(),
+					ConstrucaoEmail.emailAguardeConfirmacao(cadastro.getNome()), ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO);
 			return ResponseEntity.status(HttpStatus.OK).body("Cadastrado com Sucesso!");
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este endereço de e-mail não é válido!");
@@ -62,30 +67,27 @@ public class CadastroUsuarioService {
 	public ResponseEntity<String> confirmarToken(String pToken) {
 		Token token = tokenService.encontrarToken(pToken)
 				.orElseThrow(() -> new IllegalStateException("Este token não foi encontrado"));
+		
+		TokenDTO tokenDTO = tokenMapper.toDTO(token);
 
-		if (token.getData_confirmacao() != null) {
+		if (tokenDTO.getData_confirmacao() != null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Este endereço de e-mail já foi confirmado!!");
-		}
-
-		if (token.getData_expiracao().isBefore(LocalDateTime.now())) {
-			if(tokenService.usuarioTemTokenValido(token.getUsuario())) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("Este usuário possui token válido!");
-			}
-			
-			usuarioService.gerarNovoToken(token);
-			String link = LINK_SITE_CONFIRM + token;
+		} else if(tokenService.usuarioTemTokenValido(tokenDTO.getUsuario())) {
+			tokenService.atualizarConfirmacao(pToken);
+			usuarioService.ativarUsuario(tokenDTO.getUsuario().getEmail());
+			envioEmail.enviar(tokenDTO.getUsuario().getEmail(),
+					ConstrucaoEmail.emailConfirmacaoConcluida(token.getUsuario().getNome()),
+					ASSUNTO_EMAIL_CONFIRMADO_SUCESSO);
+			return ResponseEntity.status(HttpStatus.OK).body("O usuário foi confirmado com sucesso!");
+		} else if (tokenDTO.getData_expiracao().isBefore(LocalDateTime.now())) {
+			String link = LINK_SITE_CONFIRM + usuarioService.gerarNovoToken(tokenDTO);
 			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
 					ConstrucaoEmail.emailConfirmacaoPendente(token.getUsuario().getNome(),
-							token.getUsuario().getSobrenome(), link), ASSUNTO_EMAIL_NOVO_CADASTRO);
+							tokenDTO.getUsuario().getSobrenome(), link), ASSUNTO_EMAIL_NOVO_CADASTRO);
 			return ResponseEntity.status(HttpStatus.OK).body("Este token expirou! Um novo token foi enviado.");
 		}
-
-		tokenService.atualizarConfirmacao(pToken);
-		usuarioService.ativarUsuario(token.getUsuario().getEmail());
-		envioEmail.enviar(token.getUsuario().getEmail(),
-				ConstrucaoEmail.emailConfirmacaoConcluida(token.getUsuario().getNome()),
-				ASSUNTO_EMAIL_CONFIRMADO_SUCESSO);
-		 return ResponseEntity.status(HttpStatus.OK).body("O usuário foi confirmado com sucesso!");
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro inesperado.");
 	}
 
 }

@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.unisantos.model.Token;
+import br.unisantos.dto.TokenDTO;
+import br.unisantos.dto.UsuarioDTO;
+import br.unisantos.mapper.UsuarioMapper;
 import br.unisantos.model.Usuario;
 import br.unisantos.repository.UsuarioRepository;
 
@@ -27,6 +29,9 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioMapper usuarioMapper;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -38,13 +43,13 @@ public class UsuarioService implements UserDetailsService {
 		return usuarioRepo.findByEmail(email);
 	}
 
-	public String cadastrar(Usuario usuario) {
+	public String cadastrar(UsuarioDTO usuario) {
 		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());
 		usuario.setSenha(senhaCodificada);
-		usuarioRepo.save(usuario);
+		UsuarioDTO usuarioInserido = usuarioMapper.toDTO(usuarioRepo.save(usuarioMapper.toEntity(usuario)));
 
 		String tokenGerado = UUID.randomUUID().toString();
-		Token token = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuario);
+		TokenDTO token = new TokenDTO(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuarioInserido);
 		tokenService.salvar(token);
 
 		return token.getToken();
@@ -54,18 +59,18 @@ public class UsuarioService implements UserDetailsService {
 		Optional<Usuario> usuario = usuarioRepo.findByEmail(email);
 
 		if (usuario.isPresent()) {
-			Usuario usuarioToUpdate = usuario.get();
-			usuarioToUpdate.setAtivo(true);
-			usuarioRepo.save(usuarioToUpdate);
+			UsuarioDTO usuarioDTO = usuarioMapper.toDTO(usuario.get());
+			usuarioDTO.setAtivo(true);
+			usuarioRepo.save(usuarioMapper.toEntity(usuarioDTO));
 		}
 	}
 
-	public String gerarNovoToken(Token token) {
+	public String gerarNovoToken(TokenDTO token) {
 		String tokenGerado = UUID.randomUUID().toString();
-		Token novoToken = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120),
+		TokenDTO novoToken = new TokenDTO(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120),
 				token.getUsuario());
 		tokenService.salvar(novoToken);
 
-		return "Um novo token foi gerado.";
+		return tokenGerado;
 	}
 }
