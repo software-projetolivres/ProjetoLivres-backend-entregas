@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 
-import br.unisantos.model.ConsumidorEntregas;
+import br.unisantos.dto.ConsumidorEntregasDTO;
 import br.unisantos.service.ConsumidorEntregasService;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -34,17 +34,17 @@ public class ConsumidorEntregasController {
 	
 	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	@ResponseBody
-	public String montarListaEntregas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException {
+	public List<ConsumidorEntregasDTO> montarListaEntregas(@RequestBody String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		return consumidorEntregasService.montarListaEntregas(dataEntrega);
 	}
 	
 	@GetMapping(path = "entregasInvalidas", produces = {MediaType.APPLICATION_JSON_VALUE})
-	public List<ConsumidorEntregas> listarEntregasInvalidas(@RequestParam("dataEntrega") String dataEntrega) throws JsonMappingException, JsonProcessingException{
+	public List<ConsumidorEntregasDTO> listarEntregasInvalidas(@RequestParam("dataEntrega") String dataEntrega) throws JsonMappingException, JsonProcessingException{
 		return consumidorEntregasService.listarEntregasInvalidas(dataEntrega);
 	}
 	
 	@GetMapping(path = "entregasResp", produces = {MediaType.APPLICATION_JSON_VALUE})
-	public List<ConsumidorEntregas> listarEntregasResponsavel(@RequestParam("dataEntrega") String dataEntrega,
+	public List<ConsumidorEntregasDTO> listarEntregasResponsavel(@RequestParam("dataEntrega") String dataEntrega,
 			@RequestParam("resp") String resp) {
 		return consumidorEntregasService.listarSelecionadosResponsavel(dataEntrega, resp);
 	}
@@ -58,5 +58,4 @@ public class ConsumidorEntregasController {
 	public ResponseEntity<String> atualizarEntregas(@RequestBody String requestBody){
 		return consumidorEntregasService.atualizarEntregas(requestBody);
 	}
-	
 }
