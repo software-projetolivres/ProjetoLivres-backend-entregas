@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.unisantos.dto.EmailDTO;
 import br.unisantos.dto.TokenDTO;
 import br.unisantos.dto.UsuarioDTO;
 import br.unisantos.email.EnvioEmail;
@@ -52,11 +53,13 @@ public class CadastroUsuarioService {
 
 			String token = usuarioService.cadastrar(cadastro);
 			String link = LINK_SITE_CONFIRM + token;
-			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
+			
+			envioEmail.enviar(new EmailDTO(EMAIL_DESTINATARIO_CONFIRMACAO,
 					ConstrucaoEmail.emailConfirmacaoPendente(cadastro.getNome(), cadastro.getSobrenome(), link),
-					ASSUNTO_EMAIL_NOVO_CADASTRO);
-			envioEmail.enviar(cadastro.getEmail(),
-					ConstrucaoEmail.emailAguardeConfirmacao(cadastro.getNome()), ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO);
+					ASSUNTO_EMAIL_NOVO_CADASTRO));
+			envioEmail.enviar(new EmailDTO(cadastro.getEmail(),
+					ConstrucaoEmail.emailAguardeConfirmacao(cadastro.getNome()), ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO));
+			
 			return ResponseEntity.status(HttpStatus.OK).body("Cadastrado com Sucesso!");
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Este endereço de e-mail não é válido!");
@@ -75,15 +78,15 @@ public class CadastroUsuarioService {
 		} else if(tokenService.usuarioTemTokenValido(tokenDTO.getUsuario())) {
 			tokenService.atualizarConfirmacao(pToken);
 			usuarioService.ativarUsuario(tokenDTO.getUsuario().getEmail());
-			envioEmail.enviar(tokenDTO.getUsuario().getEmail(),
+			envioEmail.enviar(new EmailDTO(tokenDTO.getUsuario().getEmail(),
 					ConstrucaoEmail.emailConfirmacaoConcluida(token.getUsuario().getNome()),
-					ASSUNTO_EMAIL_CONFIRMADO_SUCESSO);
+					ASSUNTO_EMAIL_CONFIRMADO_SUCESSO));
 			return ResponseEntity.status(HttpStatus.OK).body("O usuário foi confirmado com sucesso!");
 		} else if (tokenDTO.getData_expiracao().isBefore(LocalDateTime.now())) {
 			String link = LINK_SITE_CONFIRM + usuarioService.gerarNovoToken(tokenDTO);
-			envioEmail.enviar(EMAIL_DESTINATARIO_CONFIRMACAO,
+			envioEmail.enviar(new EmailDTO(EMAIL_DESTINATARIO_CONFIRMACAO,
 					ConstrucaoEmail.emailConfirmacaoPendente(token.getUsuario().getNome(),
-							tokenDTO.getUsuario().getSobrenome(), link), ASSUNTO_EMAIL_NOVO_CADASTRO);
+							tokenDTO.getUsuario().getSobrenome(), link), ASSUNTO_EMAIL_NOVO_CADASTRO));
 			return ResponseEntity.status(HttpStatus.OK).body("Este token expirou! Um novo token foi enviado.");
 		}
 		
