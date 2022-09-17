@@ -15,6 +15,7 @@ public class TokenMapper {
 	@Autowired
 	UsuarioMapper usuarioMapper;
 
+	// Método que recebe o TokenDTO e devolve a entidade Token
 	public Token toEntity(TokenDTO tokenDTO) {
 		Token token = new Token();
 		token.setId(tokenDTO.getId());
@@ -27,6 +28,7 @@ public class TokenMapper {
 		return token;
 	}
 	
+	// Método que recebe a entidade Token e devolve o TokenDTO
 	public TokenDTO toDTO(Token token) {
 		TokenDTO tokenDTO = new TokenDTO();
 		tokenDTO.setId(token.getId());
@@ -39,6 +41,7 @@ public class TokenMapper {
 		return tokenDTO;
 	}
 	
+	// Método que recebe uma lista de TokenDTO e devolve uma lista de entidades Token
 	public List<Token> toEntity(List<TokenDTO> tokensDTO) {
 		List<Token> tokens = new ArrayList<>();
 		for (TokenDTO t : tokensDTO) {
@@ -48,6 +51,7 @@ public class TokenMapper {
 		return tokens;
 	}
 	
+	// Método que recebe uma lista de entidades Token e devolve uma lista de TokenDTO
 	public List<TokenDTO> toDTO(List<Token> tokens) {
 		List<TokenDTO> tokensDTO = new ArrayList<>();
 		for (Token t : tokens) {

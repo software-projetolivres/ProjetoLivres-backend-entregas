@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Component
 public class UsuarioMapper {
 
+	// Método que recebe o UsuarioDTO e devolve a entidade Usuario
 	public Usuario toEntity(UsuarioDTO usuarioDTO) {
 		Usuario usuario = new Usuario();
 		usuario.setId(usuarioDTO.getId());
@@ -27,6 +28,7 @@ public class UsuarioMapper {
 		return usuario;
 	}
 	
+	// Método que recebe a entidade Usuario e devolve o UsuarioDTO
 	public UsuarioDTO toDTO(Usuario usuario) {
 		UsuarioDTO usuarioDTO = new UsuarioDTO();
 		usuarioDTO.setId(usuario.getId());
@@ -41,6 +43,7 @@ public class UsuarioMapper {
 		return usuarioDTO;
 	}
 	
+	// Método que recebe uma lista de UsuarioDTO e devolve uma lista de entidades Usuario
 	public List<Usuario> toEntity(List<UsuarioDTO> usuariosDTO) {
 		List<Usuario> usuarios = new ArrayList<>();
 		for (UsuarioDTO u : usuariosDTO) {
@@ -50,6 +53,7 @@ public class UsuarioMapper {
 		return usuarios;
 	}
 	
+	// Método que recebe uma lista de entidades Usuario e devolve uma lista de UsuarioDTO
 	public List<UsuarioDTO> toDTO(List<Usuario> usuarios) {
 		List<UsuarioDTO> usuariosDTO = new ArrayList<>();
 		for (Usuario u : usuarios) {

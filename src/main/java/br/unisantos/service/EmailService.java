@@ -24,6 +24,7 @@ public class EmailService implements EnvioEmail {
 	@Autowired
 	private TemplateEngine templateEngine;
 	
+	/* Método responsável por realizar o envio do e-mail */
 	@Override
 	@Async //para não bloquear o cliente 
 	public void enviar(EmailDTO email) {
@@ -36,12 +37,15 @@ public class EmailService implements EnvioEmail {
 		
 	}
 	
+	/* Método responsável por pegar o html do template de e-mail devolvendo-o */
 	private String htmlFromTemplate(EmailDTO email) {
 		Context context = new Context();
 		context.setVariable("email", email);
 		return templateEngine.process("email/email", context);
 	}
 	
+	/* Método responsável por devolver a MimeMessage preenchida de acordo com as informações
+	 * importantes para a realização do envio do e-mail */
 	private MimeMessage prepareHtmlEmailMessage(EmailDTO email) throws MessagingException {
 		MimeMessage mimeMsg = javaMailSender.createMimeMessage();
 		MimeMessageHelper mimeHelper = new MimeMessageHelper(mimeMsg, "utf-8");

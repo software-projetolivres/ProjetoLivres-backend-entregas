@@ -21,7 +21,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+		
+	/* Método responsável por definir: as páginas que poderão ser acessadas sem autenticação,
+	 * páginas de redirecionamento após login */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
@@ -33,11 +35,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 	}
 	
+	
+	// Método responsável por definir como será o processamento dos dados de login
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 		auth.authenticationProvider(daoAuthenticationProvider());
 	}
 	
+	
+	// Método responsável por devolver detalhes do usuário
 	@Bean
 	public DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();

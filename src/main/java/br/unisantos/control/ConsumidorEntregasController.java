@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,12 +51,12 @@ public class ConsumidorEntregasController {
 	}
 	 
 	@PostMapping(value="/roteirizar", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException{
-		return consumidorEntregasService.roteirizarEntregas(requestBody);
+	public DirectionsResult roteirizarEntregas(@RequestBody List<ConsumidorEntregasDTO> entregas) throws ApiException, InterruptedException, IOException{
+		return consumidorEntregasService.roteirizarEntregas(entregas);
 	}
 	
-	@PutMapping(value="/atualizar", consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public ResponseEntity<String> atualizarEntregas(@RequestBody String requestBody){
-		return consumidorEntregasService.atualizarEntregas(requestBody);
+	@PutMapping(value="/atualizar/{email}", consumes = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<String> atualizarEntregas(@RequestBody List<ConsumidorEntregasDTO> entregas, @PathVariable("email") String email){
+		return consumidorEntregasService.atualizarEntregas(entregas, email);
 	}
 }

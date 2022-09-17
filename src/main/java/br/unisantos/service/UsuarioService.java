@@ -39,12 +39,18 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(String.format(USUARIO_EMAIL_NAO_ENCONTRADO)));
 	}
 	
-	public Optional<Usuario> findbyEmail(String email){
-		return usuarioRepo.findByEmail(email);
+	/* Método responsável por fazer a chamada à camada de repositório, devolvendo, se houver, um Usuario com o e-mail passado */
+	public UsuarioDTO findByEmail(String email){
+		if(usuarioRepo.findByEmail(email).isPresent()) {
+			return usuarioMapper.toDTO(usuarioRepo.findByEmail(email).get());
+		} else {
+			return null;
+		}
 	}
 
+	/* Método responsável por codificar a senha passada, salvar o usuário no banco de dados e devolver o token */
 	public String cadastrar(UsuarioDTO usuario) {
-		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());
+		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());	//codifica a senha para salvar no BD
 		usuario.setSenha(senhaCodificada);
 		UsuarioDTO usuarioInserido = usuarioMapper.toDTO(usuarioRepo.save(usuarioMapper.toEntity(usuario)));
 
@@ -55,6 +61,7 @@ public class UsuarioService implements UserDetailsService {
 		return token.getToken();
 	}
 
+	/* Método responsável por atualizar o campo "Ativo" do usuário que é buscado a partir do e-mail passado */
 	public void ativarUsuario(String email) {
 		Optional<Usuario> usuario = usuarioRepo.findByEmail(email);
 
@@ -65,6 +72,7 @@ public class UsuarioService implements UserDetailsService {
 		}
 	}
 
+	// Método responsável por gerar e devolver um novo token para o usuário do token expirado passado
 	public String gerarNovoToken(TokenDTO token) {
 		String tokenGerado = UUID.randomUUID().toString();
 		TokenDTO novoToken = new TokenDTO(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120),

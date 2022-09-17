@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DataEntrega {
 	
+	// Método auxiliar que tem como objetivo retornar a data de entrega em formato de texto a partir do JSON recebido. 
 	public static String getDataEntrega(@RequestBody String responseBody)
 			throws JsonMappingException, JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();

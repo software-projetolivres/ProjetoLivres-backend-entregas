@@ -15,6 +15,7 @@ public class ConsumidorEntregasMapper {
 	@Autowired
 	UsuarioMapper usuarioMapper;
 
+	// Método que recebe o ConsumidorEntregasDTO e devolve a entidade ConsumidorEntregas
 	public ConsumidorEntregas toEntity(ConsumidorEntregasDTO consumidorEntregasDTO) {
 		ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
 		consumidorEntregas.setId(consumidorEntregasDTO.getId());
@@ -34,6 +35,7 @@ public class ConsumidorEntregasMapper {
 		return consumidorEntregas;
 	}
 	
+	// Método que recebe a entidade ConsumidorEntregas e devolve o ConsumidorEntregasDTO
 	public ConsumidorEntregasDTO toDTO(ConsumidorEntregas consumidorEntregas) {
 		ConsumidorEntregasDTO consumidorEntregasDTO = new ConsumidorEntregasDTO();
 		consumidorEntregasDTO.setId(consumidorEntregas.getId());
@@ -53,6 +55,7 @@ public class ConsumidorEntregasMapper {
 		return consumidorEntregasDTO;
 	}
 	
+	// Método que recebe uma lista de ConsumidorEntregasDTO e devolve uma lista de entidades ConsumidorEntregas
 	public List<ConsumidorEntregas> toEntity(List<ConsumidorEntregasDTO> consumidoresEntregasDTO) {
 		List<ConsumidorEntregas> entregas = new ArrayList<>();
 		for (ConsumidorEntregasDTO e : consumidoresEntregasDTO) {
@@ -62,6 +65,7 @@ public class ConsumidorEntregasMapper {
 		return entregas;
 	}
 	
+	// Método que recebe uma lista de entidades ConsumidorEntregas e devolve uma lista de ConsumidorEntregasDTO
 	public List<ConsumidorEntregasDTO> toDTO(List<ConsumidorEntregas> consumidoresEntregas) {
 		List<ConsumidorEntregasDTO> entregasDTO = new ArrayList<>();
 		for (ConsumidorEntregas e : consumidoresEntregas) {
