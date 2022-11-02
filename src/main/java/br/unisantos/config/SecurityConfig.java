@@ -24,8 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 		
-	/* Método responsável por definir: as páginas que poderão ser acessadas sem autenticação,
-	 * páginas de redirecionamento após login */
+	/* Método responsável por definir as configurações do login e questões de autenticação */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
@@ -51,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return provider;
 	}
 	
+	/* método responsável por devolver o handler de autenticações realizadas com sucesso */
 	@Bean
 	public AuthenticationSuccessHandler appAuthenticationSuccessHandler(){
 	     return new AppAuthenticationSuccessHandler();
