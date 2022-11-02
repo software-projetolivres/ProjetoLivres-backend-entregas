@@ -9,7 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import br.unisantos.security.AppAuthenticationSuccessHandler;
 import br.unisantos.service.UsuarioService;
 
 @Configuration
@@ -28,10 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
 			.antMatchers("/api/cadastroUsuario/**").permitAll()
-			.anyRequest().authenticated().and().formLogin()
-			.defaultSuccessUrl(System.getenv("link_site") + "entregas", true)
-			.failureUrl(System.getenv("link_site") + "login").and().httpBasic();
-		http.logout().logoutSuccessUrl(System.getenv("link_site"));
+			.anyRequest().authenticated().and().formLogin().successHandler(appAuthenticationSuccessHandler());
 		http.cors();
 	}
 	
@@ -50,5 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		provider.setPasswordEncoder(passwordEncoder);
 		provider.setUserDetailsService(usuarioService);
 		return provider;
+	}
+	
+	@Bean
+	public AuthenticationSuccessHandler appAuthenticationSuccessHandler(){
+	     return new AppAuthenticationSuccessHandler();
 	}
 }
