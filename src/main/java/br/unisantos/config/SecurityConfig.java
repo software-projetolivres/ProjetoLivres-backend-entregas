@@ -1,5 +1,7 @@
 package br.unisantos.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import br.unisantos.security.AppAuthenticationSuccessHandler;
 import br.unisantos.service.UsuarioService;
@@ -29,7 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
 			.antMatchers("/api/cadastroUsuario/**").permitAll()
-			.anyRequest().authenticated().and().formLogin().successHandler(appAuthenticationSuccessHandler());
+			.anyRequest().authenticated().and().formLogin().successHandler(appAuthenticationSuccessHandler())
+			.and().httpBasic().and().headers().referrerPolicy(ReferrerPolicy.ORIGIN);
 		http.cors();
 	}
 	
@@ -55,4 +62,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationSuccessHandler appAuthenticationSuccessHandler(){
 	     return new AppAuthenticationSuccessHandler();
 	}
+	
+	@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin(CorsConfiguration.ALL);
+        configuration.setAllowedMethods(Arrays.asList(CorsConfiguration.ALL));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
