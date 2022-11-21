@@ -35,7 +35,7 @@ public class CadastroUsuarioService {
 	
 	/* CONSTANTES */
 	private final static String LINK_SITE_CONFIRM = System.getenv("link") + "api/cadastroUsuario/";
-	private final static String EMAIL_DESTINATARIO_CONFIRMACAO = System.getenv("email_destinatario_confirm");
+	private final static String EMAIL_DESTINATARIO_CONFIRMACAO = System.getenv("email_destinatario_confirm") == null ? "" : System.getenv("email_destinatario_confirm");
 	private final static String ASSUNTO_EMAIL_NOVO_CADASTRO = "Novo Entregador Cadastrado - Pendente Confirmação";
 	private final static String ASSUNTO_EMAIL_AGUARDE_CONFIRMACAO = "Aguardando Confirmação do Cadastro";
 	private final static String ASSUNTO_EMAIL_CONFIRMADO_SUCESSO = "Sucesso na Confirmação do Cadastro";
