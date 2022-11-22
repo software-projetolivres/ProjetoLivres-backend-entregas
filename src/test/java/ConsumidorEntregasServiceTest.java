@@ -1,7 +1,10 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
 
 import br.unisantos.dto.ConsumidorEntregasDTO;
 import br.unisantos.dto.UsuarioDTO;
@@ -42,10 +50,81 @@ public class ConsumidorEntregasServiceTest {
 	
 	@Mock
 	private UsuarioMapper usuarioMapper;
+	
+	@Mock
+	private ConsumidorEntregasDTO consDTO;
 
 	@BeforeEach
 	public void beforeEach() {
 		MockitoAnnotations.initMocks(this);
+	}
+	
+	@Test
+	void testRoteirizarEntregas() throws ApiException, InterruptedException, IOException {
+		ConsumidorEntregas consumidorEntregas01 = getConsumidorEntregas();
+		Optional<ConsumidorEntregas> optConsEntregas = Optional.of(consumidorEntregas01);
+		consumidorEntregas01.setEntregador_responsavel(null);
+		ConsumidorEntregasDTO consumidorEntregasDTO1 = getConsumidorEntregasDTO();
+		consumidorEntregasDTO1.setEntregador_responsavel(null);
+		
+		ArrayList<ConsumidorEntregasDTO> consumidorEntregasDTOList = new ArrayList<ConsumidorEntregasDTO>();
+		consumidorEntregasDTOList.add(consumidorEntregasDTO1);
+		
+		//When
+		Mockito.when(repo.findById(consumidorEntregasDTO1.getId())).thenReturn(optConsEntregas);
+		Mockito.when(entregasMapper.toDTO(repo.findById(consumidorEntregasDTO1.getId()).get())).thenReturn(consumidorEntregasDTO1);
+		
+		// Then
+		DirectionsResult result = consumidorEntregasService.roteirizarEntregas(consumidorEntregasDTOList);
+
+		Assert.assertEquals(result, result);
+	}
+	
+	@Test
+	void testMontaListaConsumidorEntregas() throws JsonMappingException, JsonProcessingException, JSONException {
+		ArrayList<ConsumidorEntregasDTO> consumidorEntregasDTOList = new ArrayList<ConsumidorEntregasDTO>();
+		ConsumidorEntregasDTO cons = new ConsumidorEntregasDTO();
+		cons.setId_consumidor((long) 44);
+		cons.setNome_consumidor("teste");
+		cons.setComunidade_consumidor(4);
+		cons.setTelefone_consumidor("13999999999");
+		cons.setEndereco_entrega("teste");
+		cons.setOpcao_entrega("Sim");
+		cons.setValor_entrega(7.0);
+		cons.setSelecionado(false);
+		cons.setEntregue(false);
+		cons.setData_entrega("2022-11-22");
+		consumidorEntregasDTOList.add(cons);
+		
+		String jsonEntregas = "{\"data\": [ { \"id_consumidor\": 44, \"nome_consumidor\": \"teste\", \"comunidade_consumidor\": 4, \"telefone_consumidor\": \"13999999999\", "
+				+ "\"endereco_entrega\": \"teste\", \"opcao_entrega\": \"Sim\", \"valor_entrega\": 7 } ]}";
+		
+		//When
+		Mockito.when(consumidorEntregasService.listarNaoSelecionados("2022-11-22")).thenReturn(consumidorEntregasDTOList);
+		
+		// Then
+		List<ConsumidorEntregasDTO> resp = consumidorEntregasService.montaListaConsumidorEntregas(jsonEntregas, "2022-11-22");
+
+		Assert.assertEquals(consumidorEntregasDTOList, resp);
+	}
+	
+	@Test
+	void testListarNaoSelecionados() {
+		ConsumidorEntregas consumidorEntregas01 = getConsumidorEntregas();
+		consumidorEntregas01.setEntregador_responsavel(null);
+		ConsumidorEntregasDTO consumidorEntregasDTO1 = getConsumidorEntregasDTO();
+		consumidorEntregasDTO1.setEntregador_responsavel(null);
+		
+		ArrayList<ConsumidorEntregasDTO> consumidorEntregasDTOList = new ArrayList<ConsumidorEntregasDTO>();
+		consumidorEntregasDTOList.add(consumidorEntregasDTO1);
+		
+		// When
+		Mockito.when(entregasMapper.toDTO(repo.entregasValidasNaoSelecionadas("2022-11-22"))).thenReturn(consumidorEntregasDTOList);
+		
+		// Then
+		List<ConsumidorEntregasDTO> list = consumidorEntregasService.listarNaoSelecionados("2022-11-22");
+
+		Assert.assertEquals(consumidorEntregasDTOList, list);
 	}
 	
 	@Test
@@ -71,7 +150,6 @@ public class ConsumidorEntregasServiceTest {
 	
 	@Test
 	void testListarEntregasInvalidas() {
-		UsuarioDTO entregador = getUsuarioDTO();
 		ConsumidorEntregas consumidorEntregas01 = getConsumidorEntregas();
 		consumidorEntregas01.setEndereco_entrega(null);
 		ConsumidorEntregasDTO consumidorEntregasDTO1 = getConsumidorEntregasDTO();
@@ -92,18 +170,20 @@ public class ConsumidorEntregasServiceTest {
 	@Test
 	void testAtualizarEntregas() {
 		UsuarioDTO entregador = getUsuarioDTO();
+		ArrayList<ConsumidorEntregasDTO> consumidorEntregasDTOList = new ArrayList<ConsumidorEntregasDTO>();
 		ConsumidorEntregas consumidorEntregas01 = getConsumidorEntregas();
-		ConsumidorEntregasDTO consumidorEntregasDTO1 = getConsumidorEntregasDTO();
-		consumidorEntregasDTO1.setSelecionado(true);
 		Optional<ConsumidorEntregas> optConsEntregas = Optional.of(consumidorEntregas01);
 		
-		ArrayList<ConsumidorEntregasDTO> consumidorEntregasDTOList = new ArrayList<ConsumidorEntregasDTO>();
+		//Cenário de Seleção de Entregas
+		ConsumidorEntregasDTO consumidorEntregasDTO1 = getConsumidorEntregasDTO();
+		consumidorEntregasDTO1.setSelecionado(true);
+		consumidorEntregasDTO1.setEntregador_responsavel(entregador);
 		consumidorEntregasDTOList.add(consumidorEntregasDTO1);
 		
 		// When
-		Mockito.when(repo.findById("1")).thenReturn(optConsEntregas);
-		Mockito.when(consumidorEntregasService.findById("1")).thenReturn(consumidorEntregasDTO1);
 		Mockito.when(usuarioService.findByEmail("teste@emailteste.com")).thenReturn(entregador);
+		Mockito.when(repo.findById(consumidorEntregasDTO1.getId())).thenReturn(optConsEntregas);
+		Mockito.when(entregasMapper.toDTO(repo.findById(consumidorEntregasDTO1.getId()).get())).thenReturn(consumidorEntregasDTO1);
 		
 		// Then
 		ResponseEntity<String> resposta = consumidorEntregasService.atualizarEntregas(consumidorEntregasDTOList, "teste@emailteste.com");
