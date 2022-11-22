@@ -1,5 +1,7 @@
 package br.unisantos.email;
 
+import br.unisantos.dto.EmailDTO;
+
 public interface EnvioEmail {
-	void enviar(String destinatario, String email, String assunto);
+	void enviar(EmailDTO email);
 }

@@ -1,5 +1,7 @@
 package br.unisantos.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +11,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import br.unisantos.security.AppAuthenticationSuccessHandler;
 import br.unisantos.service.UsuarioService;
 
 @Configuration
@@ -21,23 +29,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+		
+	/* Método responsável por definir as configurações do login e questões de autenticação */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable().authorizeRequests()
 			.antMatchers("/api/cadastroUsuario/**").permitAll()
-			.anyRequest().authenticated().and().formLogin()
-			.defaultSuccessUrl(System.getenv("link_site") + "entregas", true)
-			.failureUrl(System.getenv("link_site") + "login").and().httpBasic();
-		http.logout().logoutSuccessUrl(System.getenv("link_site"));
+			.anyRequest().authenticated().and().formLogin().successHandler(appAuthenticationSuccessHandler())
+			.and().httpBasic().and().headers().referrerPolicy(ReferrerPolicy.ORIGIN);
 		http.cors();
 	}
 	
+	
+	// Método responsável por definir como será o processamento dos dados de login
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 		auth.authenticationProvider(daoAuthenticationProvider());
 	}
 	
+	
+	// Método responsável por devolver detalhes do usuário
 	@Bean
 	public DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -45,4 +56,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		provider.setUserDetailsService(usuarioService);
 		return provider;
 	}
+	
+	/* método responsável por devolver o handler de autenticações realizadas com sucesso */
+	@Bean
+	public AuthenticationSuccessHandler appAuthenticationSuccessHandler(){
+	     return new AppAuthenticationSuccessHandler();
+	}
+	
+	@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin(CorsConfiguration.ALL);
+        configuration.setAllowedMethods(Arrays.asList(CorsConfiguration.ALL));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

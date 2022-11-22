@@ -22,16 +22,17 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 
+import br.unisantos.dto.ConsumidorEntregasDTO;
+import br.unisantos.dto.UsuarioDTO;
 import br.unisantos.functions.DataEntrega;
+import br.unisantos.mapper.ConsumidorEntregasMapper;
+import br.unisantos.mapper.UsuarioMapper;
 import br.unisantos.model.ConsumidorEntregas;
 import br.unisantos.model.DirectionsGoogleApi;
-import br.unisantos.model.Usuario;
 import br.unisantos.repository.ConsumidorEntregasRepository;
-import br.unisantos.repository.UsuarioRepository;
 
 @Service
 public class ConsumidorEntregasService {
@@ -40,81 +41,74 @@ public class ConsumidorEntregasService {
 	private ConsumidorEntregasRepository repo;
 	
 	@Autowired
-	private UsuarioRepository usuarioRepo;
+	private UsuarioService usuarioService;
 	
 	@Autowired
 	private DirectionsGoogleApiService directionsAPIService;
+	
+	@Autowired
+	private ConsumidorEntregasMapper entregasMapper;
+	
+	@Autowired
+	private UsuarioMapper usuarioMapper;
 
-	public String montarListaEntregas(@RequestBody String responseBody)
+	/* Método responsável por devolver a lista de ConsumidorEntregasDTO à aplicação */
+	public List<ConsumidorEntregasDTO> montarListaEntregas(@RequestBody String req)
 			throws JsonMappingException, JsonProcessingException {
-		String dataEntrega = DataEntrega.getDataEntrega(responseBody);
-		String consumidorEntregasResponse = postEntregasLivresAPI(dataEntrega);
-		String sConsumidorEntregas = montaListaConsumidorEntregas(consumidorEntregasResponse, dataEntrega);
+		String dataEntrega = DataEntrega.getDataEntrega(req);	// pega a data de entrega do JSON
+		String consumidorEntregasResponse = postEntregasLivresAPI(dataEntrega);	// captura as entregas direto da API do livres
+		List<ConsumidorEntregasDTO> consumidoresEntregas = montaListaConsumidorEntregas(consumidorEntregasResponse, dataEntrega); // salva as entregas e as devolve do BD
 
-		return sConsumidorEntregas;
+		return consumidoresEntregas;
 	}
-
-	public String montaListaConsumidorEntregas(String consumidorEntregasResponse, String dataEntrega)
+	
+	/* Método responsável por salvar as entregas vindas da API no BD e devolver as importantes para a montagem da lista de não selecionadas */
+	public List<ConsumidorEntregasDTO> montaListaConsumidorEntregas(String consumidorEntregasResponse, String dataEntrega)
 			throws JsonMappingException, JsonProcessingException {
-
 		JSONObject root = new JSONObject(consumidorEntregasResponse);
 		
-		if(root.has("data")) {
-			JSONArray consumidores = root.getJSONArray("data");
-
-			for (int i = 0; i < consumidores.length(); i++) {
-				JSONObject jsonConsumidor = consumidores.getJSONObject(i);
-
-				Long id_consumidor = jsonConsumidor.getLong("id_consumidor");
-				String nome_consumidor = jsonConsumidor.getString("nome_consumidor");
-				Integer comunidade_consumidor = jsonConsumidor.getInt("comunidade_consumidor");
-				String telefone_consumidor = jsonConsumidor.getString("telefone_consumidor");
-				String endereco_entrega = jsonConsumidor.getString("endereco_entrega");
-				String opcao_entrega = jsonConsumidor.getString("opcao_entrega");
-				Double valor_entrega = jsonConsumidor.getDouble("valor_entrega");
-
-				if (opcao_entrega.equals("Sim") && opcao_entrega != null && !opcao_entrega.isEmpty()) {
-					ConsumidorEntregas consumidorEntregas = new ConsumidorEntregas();
-					
-					consumidorEntregas.setId(dataEntrega + "c" + id_consumidor);
-					consumidorEntregas.setId_consumidor(id_consumidor);
-					consumidorEntregas.setNome_consumidor(nome_consumidor);
-					consumidorEntregas.setComunidade_consumidor(comunidade_consumidor);
-					consumidorEntregas.setTelefone_consumidor(telefone_consumidor);
-					consumidorEntregas.setEndereco_entrega(endereco_entrega);
-					consumidorEntregas.setOpcao_entrega(opcao_entrega);
-					consumidorEntregas.setValor_entrega(valor_entrega);
-					consumidorEntregas.setData_entrega(dataEntrega);
-					salvar(consumidorEntregas);
+		if(root.has("data")) {		
+			JSONArray entregas = root.getJSONArray("data");
+			
+			for(int i = 0; i < entregas.length(); i++) {
+				JSONObject entregaJSON = entregas.getJSONObject(i);
+				ConsumidorEntregasDTO entrega = new ConsumidorEntregasDTO();
+				String opcao_entrega = entregaJSON.optString("opcao_entrega");
+				
+				if(opcao_entrega.equals("Sim") && opcao_entrega != null && !opcao_entrega.isEmpty()) {
+					entrega.setId(dataEntrega + "c" + entregaJSON.optLong("id_consumidor"));
+					entrega.setId_consumidor(entregaJSON.optLong("id_consumidor"));
+					entrega.setNome_consumidor(entregaJSON.optString("nome_consumidor"));
+					entrega.setComunidade_consumidor(entregaJSON.optInt("comunidade_consumidor"));
+					entrega.setTelefone_consumidor(entregaJSON.optString("telefone_consumidor"));
+					entrega.setEndereco_entrega(entregaJSON.optString("endereco_entrega"));
+					entrega.setOpcao_entrega(entregaJSON.optString("opcao_entrega"));
+					entrega.setValor_entrega(entregaJSON.optDouble("valor_entrega"));
+					entrega.setData_entrega(dataEntrega);
+					salvar(entrega);
 				}
 			}
-			
-			return new ObjectMapper().writeValueAsString(listarNaoSelecionados(dataEntrega));
-		} else {
-			return new ObjectMapper().writeValueAsString(root.getString("message"));
 		}
+		
+		return listarNaoSelecionados(dataEntrega);
 	}
-
-	public DirectionsResult roteirizarEntregas(@RequestBody String requestBody) throws ApiException, InterruptedException, IOException {
+	
+	/* Método responsável por devolver o DirectionsResult à aplicação, de acordo com as entregas passadas para roteirização */
+	public DirectionsResult roteirizarEntregas(@RequestBody List<ConsumidorEntregasDTO> entregas) throws ApiException, InterruptedException, IOException {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
 		List<String> waypoints = new ArrayList<String>();
-		JSONObject root = new JSONObject(requestBody);
-		JSONArray entregas = root.getJSONArray("entregas");
 		
 		DirectionsGoogleApi directionsAPI = new DirectionsGoogleApi();
 		directionsAPI.setOrigin(enderecoLivres);
 		directionsAPI.setDestination(enderecoLivres);
 		directionsAPI.setOptimizeWaypoints(true);
 		
-		for(int i = 0; i < entregas.length(); i++) {
-			JSONObject jsonIdsEntregas = entregas.getJSONObject(i);
+		for(ConsumidorEntregasDTO c :entregas) {
+			ConsumidorEntregasDTO entrega = findById(c.getId());
 			
-			String id_entrega = jsonIdsEntregas.getString("id_entrega");
-			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
-			String endereco = entrega.get().getEndereco_entrega();
-			
-			if(entrega.isPresent()) {
-				endereco = endereco + " baixada santista";
+			// montagem de um waypoint
+			if(entrega != null) {
+				String endereco = entrega.getEndereco_entrega() + " baixada santista";	// adicionando 'BS' p/ tentar contornar GAP de infos. de endereço
 				waypoints.add(endereco);	
 			}
 		}
@@ -123,6 +117,8 @@ public class ConsumidorEntregasService {
 		return directionsAPIService.directionsApiGoogle(directionsAPI);
 	}
 
+	/* Método responsável por devolver um JSON em formato de String com as entregas da data passada,
+	 * informações consumidas da API do próprio sistema do Livres */
 	public String postEntregasLivresAPI(String dataEntrega) throws JsonMappingException, JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -136,67 +132,67 @@ public class ConsumidorEntregasService {
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 		String response = restTemplate.postForObject(url, request, String.class);
+		
 		return response.toString();
 	}
 
-	public List<ConsumidorEntregas> listarNaoSelecionados(String dataEntrega) {
-		List<ConsumidorEntregas> lista = repo.entregasValidasNaoSelecionadas(dataEntrega);
+	/* Método responsável por devolver a lista de ConsumidorEntregasDTO das entregas válidas não selecionadas */
+	public List<ConsumidorEntregasDTO> listarNaoSelecionados(String dataEntrega) {
+		List<ConsumidorEntregasDTO> lista = entregasMapper.toDTO(repo.entregasValidasNaoSelecionadas(dataEntrega));
 		return lista;
 	}
 
-	public List<ConsumidorEntregas> listarSelecionadosResponsavel(String dataEntrega, String email) {
-		
-		Optional<Usuario> entregador = usuarioRepo.findByEmail(email);
-		if (!entregador.isPresent()) {
+	/* Método responsável por devolver a lista de ConsumidorEntregasDTO das entregas de acordo com o entregador responsável */
+	public List<ConsumidorEntregasDTO> listarSelecionadosResponsavel(String dataEntrega, String email) {
+		UsuarioDTO entregador = usuarioService.findByEmail(email);
+		if (entregador == null) {
 			return null;
 		}
 		
-		List<ConsumidorEntregas> lista = repo.entregasSelecionadasPorEntregador(dataEntrega, entregador.get());
+		List<ConsumidorEntregasDTO> lista = entregasMapper.toDTO(repo.entregasSelecionadasPorEntregador(dataEntrega, usuarioMapper.toEntity(entregador)));
 		return lista;
 	}
 
-	public List<ConsumidorEntregas> listarEntregasInvalidas(String dataEntrega) {
-		List<ConsumidorEntregas> lista = repo.entregasInvalidas(dataEntrega);
+	/* Método responsável por devolver a lista de entregas inválidas */
+	public List<ConsumidorEntregasDTO> listarEntregasInvalidas(String dataEntrega) {
+		List<ConsumidorEntregasDTO> lista = entregasMapper.toDTO(repo.entregasInvalidas(dataEntrega));
 		return lista;
 	}
 	
-	public ResponseEntity<String> atualizarEntregas(String requestBody){
+	/* Método responsável por realizar as atualizações de uma entrega */
+	public ResponseEntity<String> atualizarEntregas(List<ConsumidorEntregasDTO> entregas, String email) {
 		String result = "Entrega(s) atualizada(s) com sucesso!";
 		Boolean msgEntregaAtribuida = false, msgEntregaInexistente = false;
-		JSONObject root = new JSONObject(requestBody);
-		String emailEntregador = root.getString("emailEntregador");
-		JSONArray idsEntregas = root.getJSONArray("entregas");
+		UsuarioDTO entregadorDTO = usuarioService.findByEmail(email);
 		
-		Optional<Usuario> entregador = usuarioRepo.findByEmail(emailEntregador);
-		if (!entregador.isPresent()) {
+		// verifica se o e-mail que está requisitando existe no sistema
+		if (entregadorDTO == null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail não pertence a nenhum entregador cadastrado no sistema.");
 		}
-
-		for (int i = 0; i < idsEntregas.length(); i++) {
-			JSONObject jsonIdsEntregas = idsEntregas.getJSONObject(i);
-			String id_entrega = jsonIdsEntregas.getString("id_entrega");
-			Boolean selecionadoJson = jsonIdsEntregas.getBoolean("selecionado");
-			Boolean entregueJson = jsonIdsEntregas.getBoolean("entregue");
-			Optional<ConsumidorEntregas> entrega = repo.findById(id_entrega);
+		
+		for(ConsumidorEntregasDTO c :entregas) {
+			Boolean selecionadoJson = c.getSelecionado();
+			Boolean entregueJson = c.getEntregue();
+			ConsumidorEntregasDTO entrega = findById(c.getId());			
 			
-			if(entrega.isPresent()) {
-				Boolean selecionado = entrega.get().getSelecionado();
-				Boolean entregue = entrega.get().getEntregue();
+			if(entrega != null) {	// caso a entrega exista no BD
+				Boolean selecionado = entrega.getSelecionado();
+				Boolean entregue = entrega.getEntregue();
 				
 				if(selecionadoJson != selecionado) {	//caso o campo "selecionado" tenha sido alterado
-					entrega.get().setSelecionado(selecionadoJson);
-					entrega.get().setEntregador_responsavel(!selecionadoJson ? null : entregador.get());
+					entrega.setSelecionado(selecionadoJson);
+					entrega.setEntregador_responsavel(!selecionadoJson ? null : entregadorDTO);
 				} else {
-					if(entrega.get().getSelecionado() == true && entrega.get().getEntregador_responsavel() != entregador.get()) {
+					if(entrega.getSelecionado() == true && entrega.getEntregador_responsavel() != entregadorDTO) {
 						msgEntregaAtribuida = true;
 					}
 				}
 				
 				if(entregueJson != entregue) {	//caso o campo "entregue" tenha sido alterado
-					entrega.get().setEntregue(entregueJson);
+					entrega.setEntregue(entregueJson);
 				}
 				
-				alterar(entrega.get());
+				alterar(entrega);
 			} else {
 				msgEntregaInexistente = true;
 			}		
@@ -208,37 +204,51 @@ public class ConsumidorEntregasService {
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	public String salvar(ConsumidorEntregas consumidorEntregas) {
-		Optional<ConsumidorEntregas> consumidorExistente = repo
+	/* Método responsável por salvar as entregas no BD */
+	public String salvar(ConsumidorEntregasDTO consumidorEntregas) {
+		Optional<ConsumidorEntregas> cons = repo
 				.findById(consumidorEntregas.getId());
-
-		if (consumidorExistente.isPresent()) {
-			consumidorEntregas.setEntregue(consumidorExistente.get().getEntregue());
-			consumidorEntregas.setSelecionado(consumidorExistente.get().getSelecionado());
-			consumidorEntregas.setEntregador_responsavel(consumidorExistente.get().getEntregador_responsavel());
-			return alterar(consumidorExistente.get());
+		
+		if (cons.isPresent()) {
+			ConsumidorEntregasDTO consumidorExistente = entregasMapper.toDTO(cons.get());
+			consumidorEntregas.setEntregue(consumidorExistente.getEntregue());
+			consumidorEntregas.setSelecionado(consumidorExistente.getSelecionado());
+			consumidorEntregas.setEntregador_responsavel(consumidorExistente.getEntregador_responsavel());
+			return alterar(consumidorEntregas);
 		}
 		
+		// se for a inserção do registro no BD, setar estes atributos como falso
 		consumidorEntregas.setEntregue(false);
 		consumidorEntregas.setSelecionado(false);
 
-		repo.save(consumidorEntregas);
+		repo.save(entregasMapper.toEntity(consumidorEntregas));
 		return "Registro criado com sucesso!";
 	}
 
-	public String alterar(ConsumidorEntregas consumidorEntregas) {
-		ConsumidorEntregas cons = consumidorEntregas;
-		BeanUtils.copyProperties(consumidorEntregas, cons, "id");
+	/* Método responsável por alterar as entregas no BD */
+	public String alterar(ConsumidorEntregasDTO consumidorEntregas) {
+		ConsumidorEntregasDTO cons = consumidorEntregas;
+		BeanUtils.copyProperties(consumidorEntregas, cons, "id");	// copia as propriedades da entidade
 		
 		if(consumidorEntregas.getOpcao_entrega() == "Não") {
 			deletar(consumidorEntregas);
 		}
-		cons = repo.save(cons);
+		repo.save(entregasMapper.toEntity(cons));
 
 		return "Registro(s) atualizados(s) com sucesso!";
 	}
 	
-	public void deletar(ConsumidorEntregas consumidorEntregas) {
+	/* Método responsável por deletar uma entrega do BD */
+	public void deletar(ConsumidorEntregasDTO consumidorEntregas) {
 		repo.deleteById(consumidorEntregas.getId());
+	}
+	
+	/* Método responsável por procurar uma entrega no BD, devolvendo ConsumidorEntregasDTO */
+	public ConsumidorEntregasDTO findById(String id){
+		if(repo.findById(id).isPresent()) {
+			return entregasMapper.toDTO(repo.findById(id).get());
+		} else {
+			return null;
+		}
 	}
 }

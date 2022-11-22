@@ -16,8 +16,16 @@ import javax.persistence.Table;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "tb_token")
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Token implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -28,12 +36,15 @@ public class Token implements Serializable {
 	private Long id;
 	
 	@Column(nullable = false)
+	@NonNull
 	private String token;
 	
 	@Column(nullable = false)
+	@NonNull
 	private LocalDateTime data_criacao;
 	
 	@Column(nullable = false)
+	@NonNull
 	private LocalDateTime data_expiracao;
 	
 	@Column(nullable = true)
@@ -42,55 +53,11 @@ public class Token implements Serializable {
 	@Autowired
 	@ManyToOne(fetch = FetchType.LAZY)	//um usuário pode ter solicitado vários tokens
 	@JoinColumn(nullable = false)
+	@NonNull
 	private Usuario usuario;
 	
 	public Token() {
-		
-	}
-	
-	public Token(String token, LocalDateTime data_criacao, LocalDateTime data_expiracao,
-			Usuario usuario) {
-		this.token = token;
-		this.data_criacao = data_criacao;
-		this.data_expiracao = data_expiracao;
-		this.usuario = usuario;
-	}
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getToken() {
-		return token;
-	}
-	public void setToken(String token) {
-		this.token = token;
-	}
-	public LocalDateTime getData_criacao() {
-		return data_criacao;
-	}
-	public void setData_criacao(LocalDateTime data_criacao) {
-		this.data_criacao = data_criacao;
-	}
-	public LocalDateTime getData_expiracao() {
-		return data_expiracao;
-	}
-	public void setData_expiracao(LocalDateTime data_expiracao) {
-		this.data_expiracao = data_expiracao;
-	}
-	public LocalDateTime getData_confirmacao() {
-		return data_confirmacao;
-	}
-	public void setData_confirmacao(LocalDateTime data_confirmacao) {
-		this.data_confirmacao = data_confirmacao;
-	}
-	public Usuario getUsuario() {
-		return usuario;
-	}
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+			
 	}
 	
 }

@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.unisantos.model.Token;
+import br.unisantos.dto.TokenDTO;
+import br.unisantos.dto.UsuarioDTO;
+import br.unisantos.mapper.UsuarioMapper;
 import br.unisantos.model.Usuario;
 import br.unisantos.repository.UsuarioRepository;
 
@@ -27,6 +29,9 @@ public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioMapper usuarioMapper;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -34,38 +39,46 @@ public class UsuarioService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(String.format(USUARIO_EMAIL_NAO_ENCONTRADO)));
 	}
 	
-	public Optional<Usuario> findbyEmail(String email){
-		return usuarioRepo.findByEmail(email);
+	/* Método responsável por fazer a chamada à camada de repositório, devolvendo, se houver, um Usuario com o e-mail passado */
+	public UsuarioDTO findByEmail(String email){
+		if(usuarioRepo.findByEmail(email).isPresent()) {
+			return usuarioMapper.toDTO(usuarioRepo.findByEmail(email).get());
+		} else {
+			return null;
+		}
 	}
 
-	public String cadastrar(Usuario usuario) {
-		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());
+	/* Método responsável por codificar a senha passada, salvar o usuário no banco de dados e devolver o token */
+	public String cadastrar(UsuarioDTO usuario) {
+		String senhaCodificada = passwordEncoder.encode(usuario.getSenha());	//codifica a senha para salvar no BD
 		usuario.setSenha(senhaCodificada);
-		usuarioRepo.save(usuario);
+		UsuarioDTO usuarioInserido = usuarioMapper.toDTO(usuarioRepo.save(usuarioMapper.toEntity(usuario)));
 
 		String tokenGerado = UUID.randomUUID().toString();
-		Token token = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuario);
+		TokenDTO token = new TokenDTO(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), usuarioInserido);
 		tokenService.salvar(token);
 
 		return token.getToken();
 	}
 
+	/* Método responsável por atualizar o campo "Ativo" do usuário que é buscado a partir do e-mail passado */
 	public void ativarUsuario(String email) {
 		Optional<Usuario> usuario = usuarioRepo.findByEmail(email);
 
 		if (usuario.isPresent()) {
-			Usuario usuarioToUpdate = usuario.get();
-			usuarioToUpdate.setAtivo(true);
-			usuarioRepo.save(usuarioToUpdate);
+			UsuarioDTO usuarioDTO = usuarioMapper.toDTO(usuario.get());
+			usuarioDTO.setAtivo(true);
+			usuarioRepo.save(usuarioMapper.toEntity(usuarioDTO));
 		}
 	}
 
-	public String gerarNovoToken(Token token) {
+	// Método responsável por gerar e devolver um novo token para o usuário do token expirado passado
+	public String gerarNovoToken(TokenDTO token) {
 		String tokenGerado = UUID.randomUUID().toString();
-		Token novoToken = new Token(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120),
+		TokenDTO novoToken = new TokenDTO(tokenGerado, LocalDateTime.now(), LocalDateTime.now().plusMinutes(120),
 				token.getUsuario());
 		tokenService.salvar(novoToken);
 
-		return "Um novo token foi gerado.";
+		return tokenGerado;
 	}
 }

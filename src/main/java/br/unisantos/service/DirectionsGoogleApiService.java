@@ -18,16 +18,22 @@ public class DirectionsGoogleApiService {
 
 	private DirectionsResult directionsResult = new DirectionsResult();
 
+	/* Método responsável por devolver o DirectionsResult de acordo com o corpo da
+	 * requisição (DirectionsGoogleApi) passado */
 	public DirectionsResult directionsApiGoogle(DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
 		directionsResult = directionsApiGoogleRes(api);
 		return addLivresWaypoints(directionsResult, api); 
 	}
 	
+	/* Método responsável por devolver o DirectionsResult de acordo com o corpo da
+	 * requisição (DirectionsGoogleApi) passado e com o DirectionsResult já 
+	 * processado */
 	public DirectionsResult addLivresWaypoints(DirectionsResult directionsResult, DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
 		String enderecoLivres = "Almeida de Moraes 175, Vila Mathias, Santos SP";
 		List<String> waypoints = new ArrayList<String>();
 		api.setOptimizeWaypoints(false);
 		
+		// Realiza a lógica de montagem da rota: a cada 3 entregas, a próxima é um retorno à sede do Livres
 		for(int i = 0; i < directionsResult.routes[0].legs.length; i++) {
 			if(i > 0 && i%3 == 0) {
 				waypoints.add(directionsResult.routes[0].legs[i].startAddress);
@@ -41,6 +47,8 @@ public class DirectionsGoogleApiService {
 		return directionsApiGoogleRes(api);
 	}
 	
+	/* Método responsável por realizar a requisição ao Google Maps de acordo com o
+	 * corpo passado, devolvendo um Directions Result */
 	public DirectionsResult directionsApiGoogleRes(DirectionsGoogleApi api) throws ApiException, InterruptedException, IOException {
 		GeoApiContext contexto = new GeoApiContext.Builder().apiKey(System.getenv("google_api_key")).build();
 
